@@ -1,6 +1,7 @@
 import React from 'react';
-import { Text, FlatList, View } from 'react-native';
+import { Text, FlatList, View, StyleSheet} from 'react-native';
 import { UserContext } from '../UserContext.js'
+import moment from 'moment';
 
 export default class History extends React.Component {
     static contextType = UserContext;
@@ -8,12 +9,25 @@ export default class History extends React.Component {
         const user = this.context.user
         return(
         <View>
-            <Text>This is the history page.</Text>
             <FlatList
                 data={user.transactionHistory}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => {
-                    return (<Text>{item.amount}</Text>)}
+                    return (
+                        <View>
+                            <Text>{'Date: ' + moment(item.date).format('MM-DD-YYYY')}</Text>
+                            <Text>{'To/From: ' + item.tofrom}</Text>
+                            <Text>{'Amount: ' + item.amount}</Text>
+                            <Text>{'Comment: ' + item.comment}</Text>
+                            <View
+                                style={{
+                                borderBottomColor: 'black',
+                                borderBottomWidth: StyleSheet.hairlineWidth,
+                                }}
+                            />
+                        </View>
+                    )
+                }
             }
             />
         </View>
