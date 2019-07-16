@@ -2,12 +2,15 @@ import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { AuthSession } from 'expo';
 import * as SecureStore from 'expo-secure-store';
+import { UserContext } from '../UserContext.js';
 
 import { CLIENT_ID, WEB_URL } from '../config.js';
 
 const authurlstart = 'https://oidc.mit.edu/authorize?response_type=code&redirect_uri='
 
 export default class Login extends React.Component {
+    static contextType = UserContext;
+
     state = {
         result: null,
     };
@@ -33,9 +36,8 @@ export default class Login extends React.Component {
         if (responseJSON){
             await SecureStore.setItemAsync('accessToken', responseJSON.access_token);
             await SecureStore.setItemAsync('refreshToken', responseJSON.refresh_token);
-            this.props.navigation.navigate('Send',{
-                user: responseJSON.user
-            });
+            await this.context.updateUser(responseJSON.user);
+            this.props.navigation.navigate('Send');
         } else {
             console.log("ERRRRRRR");
         }

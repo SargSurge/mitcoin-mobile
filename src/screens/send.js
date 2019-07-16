@@ -2,11 +2,13 @@ import React from 'react';
 import { Text , Button , View, TextInput} from 'react-native';
 import { Input } from 'react-native-elements';
 import { SafeAreaView } from 'react-navigation';
+import { UserContext } from '../UserContext.js';
+
 
 export default class Send extends React.Component {
+    static contextType = UserContext;
     render() {
-        console.log('navparamsfasf', this.props.navigation.state.params);
-        const user = this.props.navigation.getParam('user');
+        const user = this.context.user
         return (
             <SafeAreaView>
                 <Text>{user.kerberos}</Text>
@@ -24,6 +26,7 @@ export default class Send extends React.Component {
                 <View style={{height: 100, margin: 20, borderWidth: 2, borderColor: 'gray'}}>
                     <TextInput placeholder="Reason Why" multiline={true} numberOfLines={5}/>
                 </View>
+                <Button title='Submit' />
             </SafeAreaView>
         );
     }
