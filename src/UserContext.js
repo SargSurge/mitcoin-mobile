@@ -12,13 +12,18 @@ export const UserContext = createContext();
 // };
 
 export class UserProvider extends React.Component {
-    state = {test: 'hello hola test'};
+    state = {test: ''};
+
+    updateCharity = (charity) => {
+        this.setState({ charity: charity });
+    }
 
     render() {
         return (
             <UserContext.Provider value={{
                 user: this.state,
-                updateUser: async user => {this.setState(user)}
+                updateUser: user => {this.setState(user)},
+                updateCharity: this.updateCharity
             }}>
                 {this.props.children}
             </UserContext.Provider>
