@@ -51,8 +51,7 @@ export default class Charity extends React.Component{
         });
         let response = await fetch(WEB_URL + 'api/charity-selection', { method: 'POST', headers: { 'Content-Type': 'application/json'} ,body: body });
         let responseJSON = await response.json();
-        console.log('this is from the charity POST', responseJSON);
-        this.context.updateCharity(charity);
+        this.context.updateUser(responseJSON);
     }
 
     render(){

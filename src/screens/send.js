@@ -21,11 +21,12 @@ export default class Send extends React.Component {
             amount: this.state.amount,
             comment: this.state.comment
         });
-        console.log(body);
 
         let response = await fetch(WEB_URL + 'api/idsend', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: body});
         let responseJSON = await response.json();
         console.log('this is a new transaction', responseJSON);
+        this.context.updateUser(responseJSON);
+        console.log(this.context, 'ed');
     };
 
     render() {

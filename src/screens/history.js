@@ -10,7 +10,7 @@ export default class History extends React.Component {
         return(
         <View>
             <FlatList
-                data={user.transactionHistory}
+                data={user.transactionHistory.reverse()}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => {
                     return (
