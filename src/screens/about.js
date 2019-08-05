@@ -1,12 +1,16 @@
 import React from 'react';
 import { Grid, Col, Row } from 'react-native-easy-grid';
-import { Container, Content, Text, H1, H2 } from'native-base';
+import { Header, Container, Content, Text, H1, H2 } from'native-base';
 import { View, StyleSheet } from 'react-native';
+import Bar from './bar.js';
 
 export default class About extends React.Component {
     render () {
         return(
             <Container>
+                <Header>
+                    <Bar navigation={this.props.navigation}/>
+                </Header>
                 <Content>
                     <Grid>
                         <Row style={{borderBottomColor:'black', borderBottomWidth:1}}>

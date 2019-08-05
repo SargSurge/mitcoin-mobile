@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Header, Content, ListItem, Text, Radio, Right, Left, Button } from 'native-base';
 import { UserContext } from '../UserContext.js';
 import { WEB_URL } from '../config.js';
+import Bar from './bar.js';
 
 export default class Charity extends React.Component{
     static contextType = UserContext;
@@ -58,6 +59,9 @@ export default class Charity extends React.Component{
         const charity = this.context.user.charity;
         return(
             <Container>
+                <Header>
+                    <Bar navigation={this.props.navigation}/>
+                </Header>
                 <Content>
                     <Text>
                         {charity === "" ? "Please select a charity." : "Your MITcoins will be donated to " + charity + ". You can select another one from below."}

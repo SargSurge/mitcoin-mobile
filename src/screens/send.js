@@ -1,9 +1,10 @@
 import React from 'react';
-import { Container, Content, Form, Item, Input, View, H1, Button, Text, Spinner } from 'native-base';
+import { Header, Container, Content, Form, Item, Input, View, H1, Button, Text, Spinner } from 'native-base';
 import { ScrollView, KeyboardAvoidingView } from 'react-native';
 import { Formik } from 'formik';
 import { UserContext } from '../UserContext.js';
 import { WEB_URL } from '../config.js';
+import Bar from './bar.js';
 
 
 export default class Send extends React.Component {
@@ -35,6 +36,9 @@ export default class Send extends React.Component {
         const user = this.context.user
         return (
             <Container>
+                <Header>
+                    <Bar navigation={this.props.navigation} />
+                </Header>
                 <Content> 
                     <View style={{alignItems: 'center', justifyContent: 'center'}}>
                         <Text>{user.kerberos}</Text>
