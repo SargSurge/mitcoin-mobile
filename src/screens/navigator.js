@@ -5,13 +5,15 @@ import HistoryScreen from './history.js';
 import CheckTokenScreen from './checktoken.js';
 import AboutScreen from './about.js';
 import CharityScreen from './charity.js';
+import VoteScreen from './vote.js';
 
 const AppDrawer = createDrawerNavigator(
     { 
         Send: SendScreen,
         History: HistoryScreen,
         About: AboutScreen,
-        Charity: CharityScreen
+        Charity: CharityScreen,
+        Vote: VoteScreen
     },
 );
 

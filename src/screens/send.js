@@ -1,7 +1,8 @@
 import React from 'react';
-import { Header, Container, Content, Form, Item, Input, View, H1, Button, Text, Spinner } from 'native-base';
+import { Header, Container, Content, Form, Item, Input, View, H1, Button, Text, Spinner, Label} from 'native-base';
 import { ScrollView, KeyboardAvoidingView } from 'react-native';
 import { Formik } from 'formik';
+import * as yup from 'yup';
 import { UserContext } from '../UserContext.js';
 import { WEB_URL } from '../config.js';
 import Bar from './bar.js';
@@ -32,6 +33,14 @@ export default class Send extends React.Component {
         await actions.resetForm();
     };
 
+    validationSchema = yup.object().shape({
+        receiverKerberos: yup.string().required('Required!').test(
+            'validkerbmatch',
+            'Cannot send to self', 
+            value => value !== this.context.user.kerberos),
+        amount: yup.number().min(1, 'Invalid Amount!').max(parseInt(this.context.user.giveBalance), 'Invalid Amount!').required('Required!')
+    }) 
+
     render() {
         const user = this.context.user
         return (
@@ -53,14 +62,17 @@ export default class Send extends React.Component {
                             <Formik
                              initialValues={{ receiverKerberos: '', amount: '', comment: '' }}
                              onSubmit={this.handlePress}
+                             validationSchema={this.validationSchema}
                             >
                                 {formikProps => (
                                     <Form>
                                         <View style={{flexDirection: 'row'}}>
-                                            <Item style={{flex: 8}} regular>
-                                                <Input value={formikProps.values.receiverKerberos} placeholder="Receiver's kerberos" onChangeText={formikProps.handleChange('receiverKerberos')}/>
+                                            <Item style={{flex: 8}} stackedLabel>
+                                                <Label style={{color:"red"}}>{formikProps.errors.receiverKerberos && formikProps.touched.receiverKerberos ? formikProps.errors.receiverKerberos : null }</Label>
+                                                <Input autoCapitalize='none' autoCorrect={false} value={formikProps.values.receiverKerberos} placeholder="Receiver's kerberos" onChangeText={formikProps.handleChange('receiverKerberos')}/>
                                             </Item>
-                                            <Item style={{flex: 2}} regular>
+                                            <Item style={{flex: 2}} stackedLabel>
+                                                <Label style={{color:"red"}}>{formikProps.errors.amount && formikProps.touched.amount ? formikProps.errors.amount : null }</Label>
                                                 <Input value={formikProps.values.amount} placeholder='Amount' onChangeText={formikProps.handleChange('amount')}/>
                                             </Item>
                                         </View>
