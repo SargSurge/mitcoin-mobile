@@ -1,10 +1,13 @@
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
+import { H2, Button, Text } from 'native-base';
 import { AuthSession } from 'expo';
 import * as SecureStore from 'expo-secure-store';
 import { UserContext } from '../UserContext.js';
 
 import { CLIENT_ID, WEB_URL } from '../config.js';
+
+import imgLogo from '../../assets/images/logo192x192.png';
 
 const authurlstart = 'https://oidc.mit.edu/authorize?response_type=code&redirect_uri='
 
@@ -17,9 +20,15 @@ export default class Login extends React.Component {
 
     render() {
         return (
-          <View style={styles.container}>
-            <Button title="Login" onPress={this.handlePress} />
-          </View>
+            <View style={styles.container}>
+                <View style={styles.welcomeViewStyle}>
+                    <Image style={styles.imgStyle} source={imgLogo} />
+                    <H2>MITcoin</H2>
+                </View>
+                <Button style={styles.buttonStyle} primary onPress={this.handlePress}>
+                    <Text>Login with Kerberos</Text>
+                </Button>
+            </View>
         );
     }
 
@@ -49,6 +58,25 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
+        margin: 14
+    },
+    welcomeViewStyle:{
+        flex: 1,
         justifyContent: 'center',
+        alignItems: 'center'
+    },
+    imgStyle: {
+        height: 100,
+        width: 100,
+        margin: 14
+    },
+    buttonStyle: {
+        position: 'absolute',
+        bottom: 20,
+        flexDirection: 'row',
+        alignSelf: 'center',
+        borderRadius: 5,
+        margin: 14,
+        height: 50
     },
 });
