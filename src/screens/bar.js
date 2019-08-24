@@ -6,7 +6,7 @@ export default class Bar extends React.Component{
         return(
             <Left style={{flex: 1}}>
                 <Button transparent onPress={() => this.props.navigation.openDrawer() }>
-                    <Icon name='menu' />
+                    <Icon style={{color: 'red'}} name='menu' />
                 </Button>
             </Left>
         );

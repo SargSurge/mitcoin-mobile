@@ -86,7 +86,7 @@ export default class Send extends React.Component {
                                         {formikProps.isSubmitting ? (
                                             <Spinner />
                                         ): (
-                                        <Button block regular onPress={formikProps.handleSubmit}>
+                                        <Button block danger onPress={formikProps.handleSubmit}>
                                             <Text>Submit</Text>
                                         </Button>
                                         )}

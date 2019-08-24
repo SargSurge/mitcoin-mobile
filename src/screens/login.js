@@ -25,7 +25,7 @@ export default class Login extends React.Component {
                     <Image style={styles.imgStyle} source={imgLogo} />
                     <H2>MITcoin</H2>
                 </View>
-                <Button style={styles.buttonStyle} primary onPress={this.handlePress}>
+                <Button danger style={styles.buttonStyle}  onPress={this.handlePress}>
                     <Text>Login with Kerberos</Text>
                 </Button>
             </View>

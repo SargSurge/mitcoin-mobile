@@ -95,7 +95,7 @@ export default class Charity extends React.Component{
                             <Radio onPress={() => this.toggleRadio('shrinerHospital')} selected={this.state.shrinerHospital} />
                         </Right>
                     </ListItem>
-                    <Button block onPress={() => this.updateCharity()}>
+                    <Button block danger onPress={() => this.updateCharity()}>
                         <Text>Confirm</Text>
                     </Button>
                 </Content>
