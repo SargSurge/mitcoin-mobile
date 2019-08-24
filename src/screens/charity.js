@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Header, Content, ListItem, Text, Radio, Right, Left, Button } from 'native-base';
+import { Container, Header, Content, ListItem, Text, Radio, Right, Left, Button, Body, Title } from 'native-base';
 import { UserContext } from '../UserContext.js';
 import { WEB_URL } from '../config.js';
 import Bar from './bar.js';
@@ -61,6 +61,10 @@ export default class Charity extends React.Component{
             <Container>
                 <Header>
                     <Bar navigation={this.props.navigation}/>
+                    <Body style={{flex: 1}}>
+                        <Title>Charity</Title>
+                    </Body>
+                    <Right style={{flex: 1}}/>
                 </Header>
                 <Content>
                     <Text>

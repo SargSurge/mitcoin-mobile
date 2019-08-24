@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Container, Content, Form, Item, Input, View, H1, Button, Text, Spinner, Label} from 'native-base';
+import { Header, Container, Content, Form, Item, Input, View, H1, Button, Text, Spinner, Label, Body, Title, Right } from 'native-base';
 import { ScrollView, KeyboardAvoidingView } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -47,6 +47,10 @@ export default class Send extends React.Component {
             <Container>
                 <Header>
                     <Bar navigation={this.props.navigation} />
+                    <Body style={{flex: 1}}>
+                        <Title>Send Coins</Title>
+                    </Body>
+                    <Right style={{flex: 1}}/>
                 </Header>
                 <Content> 
                     <View style={{alignItems: 'center', justifyContent: 'center'}}>

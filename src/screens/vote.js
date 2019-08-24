@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Header, Content, Text, Icon, Picker, } from "native-base";
+import { Container, Header, Content, Text, Icon, Picker, Body, Title, Right } from "native-base";
 import { UserContext } from '../UserContext.js';
 import { WEB_URL } from '../config.js';
 import Bar from './bar.js';
@@ -76,6 +76,10 @@ export default class Vote extends React.Component{
             <Container>
                 <Header>
                     <Bar navigation={this.props.navigation} />
+                    <Body style={{flex: 1}}>
+                        <Title>Vote</Title>
+                    </Body>
+                    <Right style={{flex: 1}}/>
                 </Header>
                 <Content>
                     <Text>{this.state.selected ? 'Your selected charity is:': 'Please select a charity:'}</Text>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Container, Tabs, Tab } from'native-base';
+import { Header, Container, Tabs, Tab, Body, Title, Right} from'native-base';
 import Bar from './bar.js';
 import TheProject from './about/theproject.js';
 import TheCoins from './about/thecoins.js';
@@ -11,6 +11,10 @@ export default class About extends React.Component {
             <Container>
                 <Header hasTabs>
                     <Bar navigation={this.props.navigation}/>
+                    <Body style={{flex: 1}}>
+                        <Title>About</Title>
+                    </Body>
+                    <Right style={{flex: 1}}/>
                 </Header>
 
                 <Tabs>
