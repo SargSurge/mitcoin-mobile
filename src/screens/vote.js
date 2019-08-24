@@ -81,8 +81,8 @@ export default class Vote extends React.Component{
                     </Body>
                     <Right style={{flex: 1}}/>
                 </Header>
-                <Content>
-                    <Text>{this.state.selected ? 'Your selected charity is:': 'Please select a charity:'}</Text>
+                <Content style={{paddingTop: 10 }}>
+                    <Text style={{alignSelf: 'center'}}>{this.state.selected ? 'Your selected charity is:': 'Please select a charity:'}</Text>
                     <Picker
                         mode="dropdown"
                         iosHeader="Vote for your charity"
