@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "coin",
-    "slug": "frontend",
+    "name": "MITCoin",
+    "slug": "mitcoin",
     "privacy": "public",
     "sdkVersion": "33.0.0",
     "platforms": [
@@ -24,7 +24,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+        "bundleIdentifier": "com.mhh.mitcoin"
+    },
+    "android": {
+        "package": "com.mhh.mitcoin",
+        "permissions": [],
+        "versionCode": 3
     },
     "scheme": "myapp"
   }

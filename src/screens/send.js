@@ -5,6 +5,7 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { UserContext } from '../UserContext.js';
 import { WEB_URL } from '../config.js';
+import * as WebBrowser from 'expo-web-browser';
 import Bar from './bar.js';
 
 
@@ -33,6 +34,10 @@ export default class Send extends React.Component {
         await actions.resetForm();
     };
 
+    directoryPress = async () => {
+        await WebBrowser.openBrowserAsync('https://mobi.mit.edu/directory/index');
+    }
+
     validationSchema = yup.object().shape({
         receiverKerberos: yup.string().required('Required!').test(
             'validkerbmatch',
@@ -57,6 +62,9 @@ export default class Send extends React.Component {
                         <Text>{user.kerberos}</Text>
                         <Text>{"You have " + user.giveBalance + " MITcoins to give."}</Text>
                         <Text>{"You have received " + user.receiveBalance + " MITcoins."}</Text>
+                        <Button rounded danger onPress={this.directoryPress} style={{ alignSelf: 'center' }}>
+                            <Text>People's Directory</Text>
+                        </Button>
                         <View style={{width: '100%', borderBottomColor: 'black', borderBottomWidth: 0.5 }} />
                         <Text>{'\n'}</Text>
                     </View>
