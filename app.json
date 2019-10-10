@@ -3,7 +3,7 @@
     "name": "MITCoin",
     "slug": "mitcoin",
     "privacy": "public",
-    "sdkVersion": "33.0.0",
+    "sdkVersion": "34.0.0",
     "platforms": [
       "ios",
       "android",
@@ -24,13 +24,16 @@
       "**/*"
     ],
     "ios": {
-        "bundleIdentifier": "com.mhh.mitcoin"
+      "bundleIdentifier": "com.mhh.mitcoin"
     },
     "android": {
-        "package": "com.mhh.mitcoin",
-        "permissions": [],
-        "versionCode": 4
+      "package": "com.mhh.mitcoin",
+      "permissions": [],
+      "versionCode": 4
     },
-    "scheme": "myapp"
-  }
+    "scheme": "myapp",
+    "entryPoint": "node_modules/expo/AppEntry.js"
+  },
+  "displayName": "MITCoin",
+  "name": "MITCoin"
 }
