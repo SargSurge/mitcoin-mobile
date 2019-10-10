@@ -29,7 +29,7 @@
     "android": {
         "package": "com.mhh.mitcoin",
         "permissions": [],
-        "versionCode": 3
+        "versionCode": 4
     },
     "scheme": "myapp"
   }
