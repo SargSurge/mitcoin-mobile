@@ -10,14 +10,19 @@ import CheckTokenScreen from "./checktoken.js";
 import AboutScreen from "./about.js";
 //import CharityScreen from './charity.js';
 import VoteScreen from "./vote.js";
+import ProfileScreen from "./profile.js";
 
-const AppDrawer = createDrawerNavigator({
-  Send: SendScreen,
-  History: HistoryScreen,
-  About: AboutScreen,
-  //Charity: CharityScreen,
-  Vote: VoteScreen,
-});
+const AppDrawer = createDrawerNavigator(
+  {
+    Profile: ProfileScreen,
+    Send: SendScreen,
+    History: HistoryScreen,
+    "About MITCoin": AboutScreen,
+    //Charity: CharityScreen,
+    // Vote: VoteScreen,
+  },
+  { drawerStyle: { width: "100%" } }
+);
 
 const navigator = createSwitchNavigator(
   {

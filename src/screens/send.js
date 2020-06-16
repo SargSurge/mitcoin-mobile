@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Header,
   Container,
   Content,
   Form,
@@ -9,13 +8,9 @@ import {
   View,
   H1,
   Button,
-  Text,
   Spinner,
   Label,
-  Body,
-  Title,
-  Right,
-  ListItem,
+  Text,
 } from "native-base";
 import {
   ScrollView,
@@ -24,11 +19,11 @@ import {
   FlatList,
   Platform,
   Image,
-  ImageBackground,
   Modal,
   Keyboard,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  TouchableHighlight,
 } from "react-native";
 
 import { Dropdown } from "react-native-material-dropdown";
@@ -42,10 +37,11 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { UserContext } from "../UserContext.js";
+import Header from "./header.js";
 import { WEB_URL } from "../config.js";
 import * as WebBrowser from "expo-web-browser";
-import Bar from "./bar.js";
-import imgLogo from "../../assets/images/logo192x192.png";
+import Background from "./imageBackground.js";
+import Fonts from "./fonts.js";
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback
@@ -61,14 +57,58 @@ const DismissKeyboard = ({ children }) => (
     {children}
   </TouchableWithoutFeedback>
 );
+const CoinDetails = ({ text, value }) => (
+  <View
+    style={{
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 4,
+    }}
+  >
+    <Text style={{ flex: 3, ...Fonts.header, fontWeight: "600", fontSize: 18 }}>
+      {text}:{" "}
+    </Text>
+    <Text style={{ ...Fonts.regular_text, flex: 4, fontSize: 16 }}>
+      {value}
+    </Text>
+  </View>
+);
 //For ease when working
-sample_user = {
-  mitid: 123456,
+sample_user1 = {
+  mitid: 924392664,
   kerberos: "bntanga",
   giveBalance: 743,
   receiveBalance: 21,
   charity: "onTheRise",
+  fullName: "Brian Ntanga",
   transactionHistory: [],
+};
+
+export const userSample = {
+  fullName: "Brian Ntanga",
+  mitid: 6667788,
+  kerberos: "bntanga",
+  giveBalance: 5000,
+  amountGiven: 20,
+  receiveBalance: 50,
+  votedCharities: [
+    "My very long name charity Which is going to overflow",
+    "Africa music",
+    "Another charity",
+  ],
+  selectedCharity: "yaba wizo",
+  distinctSends: { kerbs: ["bntanga"], number: 4 },
+  distinctReceives: { kerbs: ["ifyt"], number: 6 },
+  sendHistory: [],
+  receiveHistory: [
+    {
+      date: 66060505070708808008909090909090900990,
+      amount: 10,
+      tofrom: "bouth",
+      comment: "Because i WANT",
+      name: "Bint Outhman",
+    },
+  ],
 };
 
 export default class Send extends React.Component {
@@ -83,23 +123,102 @@ export default class Send extends React.Component {
     rerender: true,
     showDropdown: false,
     displayName: "",
+    modalVisible: true,
+    sendingToName: "",
   };
 
-  componentDidMount() {
-    //change this to user obj
-    this.get_user_name(sample_user.kerberos);
-  }
+  modal = () => {
+    return (
+      <View style={styles.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisible}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: "600",
 
-  get_user_name = async (kerb) => {
-    //this function gets name from kerb id of user
-    let response = await fetch(
-      `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb}`
+                  textAlign: "center",
+                  marginBottom: 16,
+                  ...Fonts.header,
+                }}
+              >
+                Vote for a charity!{" "}
+              </Text>
+              <Text style={styles.modalText}>
+                Hello {this.state.displayName}! You have not yet voted for a
+                charity. Please click on the button below to vote for a charity
+                of your choice on our website.{" "}
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <TouchableHighlight
+                  style={{
+                    borderRadius: 10,
+                    borderColor: "#9CD6B0",
+                    borderWidth: 1,
+                    padding: 10,
+                    elevation: 2,
+                    backgroundColor: "#ffffff",
+                  }}
+                  onPress={() => {
+                    this.voteOnWebsite();
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "green",
+                      fontWeight: "600",
+                      textAlign: "center",
+                    }}
+                  >
+                    {" "}
+                    Vote for charity{" "}
+                  </Text>
+                </TouchableHighlight>
+                <TouchableHighlight
+                  style={{
+                    borderRadius: 20,
+                    padding: 10,
+                    elevation: 2,
+                  }}
+                  onPress={() => {
+                    this.setState({ modalVisible: false });
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "red",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >
+                    {" "}
+                    Close{" "}
+                  </Text>
+                </TouchableHighlight>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </View>
     );
-    let responseJSON = await response.json();
-    let userobj = responseJSON.users[0];
-    let first_name = userobj.name.split(" ")[0];
-    this.setState({ displayName: first_name });
   };
+
+  voteOnWebsite = async () => {
+    let result = await WebBrowser.openBrowserAsync(
+      WEB_URL + "votecharity/" + sample_user.mitid
+    );
+  };
+
   fetch_data = async (kerb_or_name) => {
     //Too little data to search through
     console.log("func invoked with " + kerb_or_name);
@@ -121,6 +240,7 @@ export default class Send extends React.Component {
       receiverKerberos: values.receiverKerberos,
       amount: values.amount,
       comment: values.comment,
+      name: this.state.sendingToName,
     });
 
     let response = await fetch(WEB_URL + "api/idsend", {
@@ -153,31 +273,28 @@ export default class Send extends React.Component {
 
   render() {
     // const user = this.context.user;
-    const user = sample_user;
+    const user = userSample;
+
+    let border = (
+      <View
+        style={{
+          borderTopColor: "#982B39",
+          borderTopWidth: 0.5,
+          width: "100%",
+        }}
+      ></View>
+    );
+
     let custom_hash = (
       <Text style={{ color: "#238627", fontSize: 24 }}> # </Text>
     );
+
     return (
       <DismissKeyboard>
         <Container>
-          <ImageBackground
-            source={imgLogo}
-            style={{
-              position: "absolute",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              height: "100%",
-              opacity: 0.026,
-            }}
-          ></ImageBackground>
-          <Header>
-            <Bar navigation={this.props.navigation} />
-            <Body style={{ flex: 1 }}>
-              <Title>Send Coins</Title>
-            </Body>
-            <Right style={{ flex: 1 }} />
-          </Header>
+          <Background />
+          <Header navigation={this.props.navigation} title={"Send Coins"} />
+
           <View style={styles.AppContainer}>
             <View
               style={{
@@ -192,87 +309,44 @@ export default class Send extends React.Component {
                   marginBottom: 8,
                   paddingTop: 4,
                   fontWeight: "500",
-                  ...Platform.select({
-                    ios: {
-                      fontFamily: "Georgia-Italic",
-                    },
-                    android: {
-                      fontFamily: "notoserif",
-                    },
-                  }),
+                  ...Fonts.header,
+                  fontSize: 26,
                 }}
               >
                 {" "}
-                Welcome {this.state.displayName}!
+                Welcome {user.fullName.split(" ")[0]}!
               </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "flex-start",
-                  justifyContent: "flex-start",
-                  ...Platform.select({
-                    ios: {
-                      fontFamily: "Georgia",
-                    },
-                    android: {
-                      fontFamily: "notoserif",
-                    },
-                  }),
-                }}
-              >
-                <FontAwesomeIcon
-                  icon={faHandHoldingUsd}
-                  color="#982B39"
-                  size={24}
-                />
-                <Text
-                  style={{
-                    paddingBottom: 4,
-                    paddingTop: 4,
-                    marginTop: 0,
-                  }}
-                >
-                  {"  Coins to give: " + user.giveBalance + " MITcoins "}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  paddingBottom: 8,
-                  paddingTop: 4,
-                }}
-              >
-                <FontAwesome5 name="donate" size={24} color="#982B39" />
-                <Text style={{ paddingBottom: 4, paddingTop: 4 }}>
-                  {"   Coins received: " + user.receiveBalance + " MITcoins"}
-                </Text>
-              </View>
 
+              {border}
               <View
                 style={{
                   width: "100%",
-                  borderBottomColor: "black",
-                  borderBottomWidth: 0.5,
+                  marginTop: 24,
+                  marginBottom: 24,
+                  marginLeft: 16,
                 }}
-              />
-              <Text>{"\n"}</Text>
+              >
+                <CoinDetails
+                  text="Coins you can give"
+                  value={`${user.giveBalance} MITCoins`}
+                />
+
+                <CoinDetails
+                  text="Coins you've received"
+                  value={`${user.receiveBalance} MITCoins`}
+                />
+              </View>
             </View>
+            {border}
 
             <KeyboardAvoidingView behavior="padding" enabled>
               <Text
                 style={{
                   fontSize: 28,
+                  padding: 16,
 
                   textAlign: "center",
-                  marginBottom: 16,
-                  ...Platform.select({
-                    ios: {
-                      fontFamily: "AvenirNextCondensed-Medium",
-                    },
-                    android: {
-                      fontFamily: "monospace",
-                    },
-                  }),
+                  ...Fonts.header,
                 }}
               >
                 {custom_hash}
@@ -377,6 +451,7 @@ export default class Send extends React.Component {
                                       this.setState({
                                         rerender: false,
                                         showDropdown: false,
+                                        sendingToName: item.name,
                                       });
                                     }}
                                   >
@@ -455,7 +530,7 @@ export default class Send extends React.Component {
                       <Spinner />
                     ) : (
                       <Button block danger onPress={formikProps.handleSubmit}>
-                        <Text>Submit</Text>
+                        <Text style={{ fontWeight: "600" }}>Submit</Text>
                       </Button>
                     )}
                   </Form>
@@ -464,6 +539,7 @@ export default class Send extends React.Component {
             </KeyboardAvoidingView>
             {/* </ScrollView> */}
           </View>
+          {this.modal()}
         </Container>
       </DismissKeyboard>
     );
@@ -477,5 +553,40 @@ const styles = StyleSheet.create({
 
   AppContainer: {
     padding: 8,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    // alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });
