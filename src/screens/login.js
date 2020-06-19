@@ -55,6 +55,7 @@ export default class Login extends React.Component {
         responseJSON.refresh_token
       );
       await this.context.updateUser(responseJSON.user);
+      // await this.context.updateVotingStatus(responseJSON.is_voting_closed);
       if (responseJSON.first_login) {
         console.log("first time login in!!");
       }

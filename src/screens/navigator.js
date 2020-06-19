@@ -31,7 +31,8 @@ const navigator = createSwitchNavigator(
     Drawer: AppDrawer,
   },
   {
-    initialRouteName: "Drawer",
+    initialRouteName: "Login",
+    // initialRouteName: "Drawer",
   }
 );
 

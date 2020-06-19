@@ -96,7 +96,7 @@ export const userSample = {
     "Africa music",
     "Another charity",
   ],
-  selectedCharity: "yaba wizo",
+  selectedCharity: "On the Rise",
   distinctSends: { kerbs: ["bntanga"], number: 4 },
   distinctReceives: { kerbs: ["ifyt"], number: 6 },
   sendHistory: [],
@@ -272,8 +272,8 @@ export default class Send extends React.Component {
   });
 
   render() {
-    // const user = this.context.user;
-    const user = userSample;
+    const user = this.context.user;
+    // const user = userSample;
 
     let border = (
       <View

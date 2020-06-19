@@ -47,8 +47,9 @@ export default class Profile extends React.Component {
   state = {};
 
   render() {
-    // const user = this.context.user;
-    const user = userSample;
+    const user = this.context.user;
+
+    // const user = userSample;
     custom_num = (num) => (
       <Text
         style={{
@@ -121,10 +122,21 @@ export default class Profile extends React.Component {
             You have received {custom_num(user.receiveBalance)} MITCoins from{" "}
             {custom_num(user.distinctReceives.number)}{" "}
             {user.distinctReceives.number === 1 ? "person" : "different people"}
-            .
+            {/* change kerberos to actual ID */}
           </Text>
-          <VotedCharities charities={user.votedCharities} />
-          {/* <SelectedCharityView selectedCharity={user.selectedCharity} /> */}
+
+          {this.context.voting_closed ? (
+            <SelectedCharityView
+              selected_charity={user.selectedCharity}
+              mitid={user.kerberos}
+            />
+          ) : (
+            <VotedCharities
+              charities={user.votedCharities}
+              mitid={user.kerberos}
+            />
+          )}
+
           {border}
 
           <TouchableOpacity

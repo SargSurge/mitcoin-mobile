@@ -20,8 +20,8 @@ import { userSample } from "./send.js";
 export default class History extends React.Component {
   static contextType = UserContext;
   render() {
-    // const user = this.context.user;
-    const user = userSample;
+    const user = this.context.user;
+    // const user = userSample;
     return (
       <Container>
         <Background />
