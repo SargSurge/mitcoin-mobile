@@ -219,6 +219,7 @@ export default class Send extends React.Component {
     // let result = await WebBrowser.openBrowserAsync(
     //   WEB_URL + "votecharity/" + sample_user.mitid
     // );
+    console;
     Linking.openURL(WEB_URL + "votecharity/" + sample_user.mitid);
     this.setState({ modalVisible: false });
   };

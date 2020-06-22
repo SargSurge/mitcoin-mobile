@@ -18,6 +18,7 @@ import Fonts from "./fonts.js";
 import { userSample } from "./send.js";
 import VotedCharities from "./votedCharities.js";
 import SelectedCharityView from "./selectedCharityView.js";
+
 sample_user = {
   mitid: 924392664,
   kerberos: "bntanga",

@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import Fonts from "./fonts.js";
 import { WEB_URL } from "../config.js";
 import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
 
 NoCharitySelectedView = () => (
   <View style={{ width: "100%" }}>
@@ -103,9 +104,10 @@ export default class VotedCharities extends React.Component {
   };
 
   voteOnWebsite = async () => {
-    let result = await WebBrowser.openBrowserAsync(
-      WEB_URL + "votecharity/" + this.props.mitid
-    );
+    // let result = await WebBrowser.openBrowserAsync(
+    //   WEB_URL + "votecharity/" + this.props.mitid
+    // );
+    Linking.openURL(WEB_URL + "votecharity/" + this.props.mitid);
     //rerendering to refresh results
     // this is not working, find other solution
     this.setState({});
