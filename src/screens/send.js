@@ -26,12 +26,14 @@ import {
   TouchableHighlight,
 } from "react-native";
 
+import * as Linking from "expo-linking";
 import { Dropdown } from "react-native-material-dropdown";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faHandHoldingUsd } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
+
 // import GiveMoney from "../../assets/images/giveMoney.svg";
 
 import { Formik } from "formik";
@@ -214,9 +216,11 @@ export default class Send extends React.Component {
   };
 
   voteOnWebsite = async () => {
-    let result = await WebBrowser.openBrowserAsync(
-      WEB_URL + "votecharity/" + sample_user.mitid
-    );
+    // let result = await WebBrowser.openBrowserAsync(
+    //   WEB_URL + "votecharity/" + sample_user.mitid
+    // );
+    Linking.openURL(WEB_URL + "votecharity/" + sample_user.mitid);
+    this.setState({ modalVisible: false });
   };
 
   fetch_data = async (kerb_or_name) => {

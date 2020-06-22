@@ -124,18 +124,18 @@ export default class Profile extends React.Component {
             {user.distinctReceives.number === 1 ? "person" : "different people"}
             {/* change kerberos to actual ID */}
           </Text>
-
+          {/* 
           {this.context.voting_closed ? (
             <SelectedCharityView
               selected_charity={user.selectedCharity}
               mitid={user.kerberos}
             />
-          ) : (
-            <VotedCharities
-              charities={user.votedCharities}
-              mitid={user.kerberos}
-            />
-          )}
+          ) : ( */}
+          <VotedCharities
+            charities={user.votedCharities}
+            mitid={user.kerberos}
+          />
+          {/* )} */}
 
           {border}
 
