@@ -220,7 +220,7 @@ export default class Send extends React.Component {
     //   WEB_URL + "votecharity/" + sample_user.mitid
     // );
     console;
-    Linking.openURL(WEB_URL + "votecharity/" + sample_user.mitid);
+    Linking.openURL(WEB_URL + "votecharity/" + this.context.user.kerberos);
     this.setState({ modalVisible: false });
   };
 
@@ -388,6 +388,8 @@ export default class Send extends React.Component {
                             : null}
                         </Label>
                         <Input
+                          returnKeyType="done"
+                          blurOnSubmit={true}
                           autoCapitalize="none"
                           autoCorrect={false}
                           value={formikProps.values.receiverKerberos}
@@ -506,6 +508,8 @@ export default class Send extends React.Component {
                           value={formikProps.values.amount}
                           placeholder="Amount"
                           onChangeText={formikProps.handleChange("amount")}
+                          returnKeyType="done"
+                          blurOnSubmit={true}
                         />
                       </Item>
 
@@ -528,6 +532,8 @@ export default class Send extends React.Component {
                           multiline={true}
                           numberOfLines={3}
                           onChangeText={formikProps.handleChange("comment")}
+                          returnKeyType="done"
+                          blurOnSubmit={true}
                         />
                       </Item>
                     </View>

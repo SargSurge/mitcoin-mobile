@@ -14,10 +14,11 @@ import ProfileScreen from "./profile.js";
 
 const AppDrawer = createDrawerNavigator(
   {
+    "About MITCoin": AboutScreen,
     Profile: ProfileScreen,
     Send: SendScreen,
     History: HistoryScreen,
-    "About MITCoin": AboutScreen,
+
     //Charity: CharityScreen,
     // Vote: VoteScreen,
   },
@@ -31,8 +32,8 @@ const navigator = createSwitchNavigator(
     Drawer: AppDrawer,
   },
   {
-    initialRouteName: "Login",
-    // initialRouteName: "Drawer",
+    // initialRouteName: "Login",
+    initialRouteName: "Drawer",
   }
 );
 

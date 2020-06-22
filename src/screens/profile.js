@@ -147,19 +147,18 @@ export default class Profile extends React.Component {
               // borderWidth: 1,
               padding: 10,
               elevation: 2,
-              backgroundColor: "#ffffff",
               marginTop: 30,
             }}
           >
             <Text
               style={{
-                color: "red",
+                color: "#982B39",
                 fontWeight: "600",
                 textAlign: "center",
                 ...Fonts.regular_text,
                 fontSize: 16,
                 borderRadius: 10,
-                borderColor: "red",
+                borderColor: "#982B39",
                 borderWidth: 1,
                 padding: 10,
                 elevation: 2,
