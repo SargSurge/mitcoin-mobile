@@ -4,10 +4,10 @@ import Bar from "./bar.js";
 
 export default HeaderFunction = ({ navigation, title }) => {
   return (
-    <Header>
+    <Header style={{ backgroundColor: "#982B39" }}>
       <Bar navigation={navigation} />
       <Body style={{ flex: 1 }}>
-        <Title>{title}</Title>
+        <Title style={{ color: "white" }}>{title}</Title>
       </Body>
       <Right style={{ flex: 1 }} />
     </Header>

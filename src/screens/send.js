@@ -540,7 +540,12 @@ export default class Send extends React.Component {
                     {formikProps.isSubmitting ? (
                       <Spinner />
                     ) : (
-                      <Button block danger onPress={formikProps.handleSubmit}>
+                      <Button
+                        block
+                        danger
+                        onPress={formikProps.handleSubmit}
+                        style={{ backgroundColor: "#982B39" }}
+                      >
                         <Text style={{ fontWeight: "600" }}>Submit</Text>
                       </Button>
                     )}
