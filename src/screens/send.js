@@ -162,7 +162,7 @@ export default class Send extends React.Component {
                   justifyContent: "space-between",
                 }}
               >
-                <TouchableHighlight
+                <TouchableOpacity
                   style={{
                     borderRadius: 10,
                     borderColor: "#9CD6B0",
@@ -185,8 +185,8 @@ export default class Send extends React.Component {
                     {" "}
                     Vote for charity{" "}
                   </Text>
-                </TouchableHighlight>
-                <TouchableHighlight
+                </TouchableOpacity>
+                <TouchableOpacity
                   style={{
                     borderRadius: 20,
                     padding: 10,
@@ -206,7 +206,7 @@ export default class Send extends React.Component {
                     {" "}
                     Close{" "}
                   </Text>
-                </TouchableHighlight>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
