@@ -1,4 +1,5 @@
 import React from "react";
+import Toast, { DURATION } from "react-native-easy-toast";
 import {
   Container,
   Content,
@@ -75,17 +76,8 @@ const CoinDetails = ({ text, value }) => (
     </Text>
   </View>
 );
-//For ease when working
-sample_user1 = {
-  mitid: 924392664,
-  kerberos: "bntanga",
-  giveBalance: 743,
-  receiveBalance: 21,
-  charity: "onTheRise",
-  fullName: "Brian Ntanga",
-  transactionHistory: [],
-};
 
+//For ease when working
 export const userSample = {
   fullName: "Brian Ntanga",
   mitid: 6667788,
@@ -121,8 +113,6 @@ export default class Send extends React.Component {
     amount: "",
     comment: "",
     searchResults: [],
-    //this value doesnt do anything but leaving it just in case
-    rerender: true,
     showDropdown: false,
     displayName: "",
     modalVisible: true,
@@ -130,6 +120,20 @@ export default class Send extends React.Component {
   };
 
   modal = () => {
+    intro_text = this.context.voting_closed
+      ? "Select a charity!"
+      : "Vote for a charity!";
+    explanation_text = this.context.voting_closed
+      ? `Hello   ${this.state.displayName} ! Voting is closed and the top 3 charities have been selected. 
+      Please click the button below to select one of the three charities to which the equivalent
+       dollar amount of all your received coins will be donated to.`
+      : `Hello ${this.state.displayName}! You have not yet voted for a
+    charity. Please click on the button below to vote for a charity (or charities)
+    of your choice on our website.`;
+    button_text = this.context.voting_closed
+      ? "Select a charity"
+      : "Vote for charities";
+
     return (
       <View style={styles.centeredView}>
         <Modal
@@ -149,13 +153,9 @@ export default class Send extends React.Component {
                   ...Fonts.header,
                 }}
               >
-                Vote for a charity!{" "}
+                {intro_text}
               </Text>
-              <Text style={styles.modalText}>
-                Hello {this.state.displayName}! You have not yet voted for a
-                charity. Please click on the button below to vote for a charity
-                of your choice on our website.{" "}
-              </Text>
+              <Text style={styles.modalText}>{explanation_text}</Text>
               <View
                 style={{
                   flexDirection: "row",
@@ -182,8 +182,7 @@ export default class Send extends React.Component {
                       textAlign: "center",
                     }}
                   >
-                    {" "}
-                    Vote for charity{" "}
+                    {button_text}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -219,7 +218,6 @@ export default class Send extends React.Component {
     // let result = await WebBrowser.openBrowserAsync(
     //   WEB_URL + "votecharity/" + sample_user.mitid
     // );
-    console;
     Linking.openURL(WEB_URL + "votecharity/" + this.context.user.kerberos);
     this.setState({ modalVisible: false });
   };
@@ -258,6 +256,7 @@ export default class Send extends React.Component {
     this.context.updateUser(responseJSON);
     await actions.setSubmitting(false);
     await actions.resetForm();
+    this.refs.toast.show("Coins sent successfully!", DURATION.LENGTH_LONG);
   };
 
   validationSchema = yup.object().shape({
@@ -290,6 +289,10 @@ export default class Send extends React.Component {
       ></View>
     );
 
+    showToast = () => {
+      this.refs.toast.show("Coins sent successfully!", 2000);
+    };
+
     let custom_hash = (
       <Text style={{ color: "#238627", fontSize: 24 }}> # </Text>
     );
@@ -297,6 +300,28 @@ export default class Send extends React.Component {
     return (
       <DismissKeyboard>
         <Container>
+          <Toast
+            ref="toast"
+            style={{
+              backgroundColor: "#238627",
+              paddingLeft: 24,
+              paddingRight: 24,
+              paddingTop: 16,
+              paddingBottom: 16,
+              borderWidth: 1,
+              borderRadius: 16,
+
+              borderColor: "#238627",
+            }}
+            textStyle={{
+              ...Fonts.regular_text,
+              color: "white",
+              fontSize: 22,
+              textAlign: "center",
+              alignSelf: "center",
+            }}
+            position="top"
+          />
           <Background />
           <Header navigation={this.props.navigation} title={"Send Coins"} />
 
@@ -543,7 +568,11 @@ export default class Send extends React.Component {
                       <Button
                         block
                         danger
-                        onPress={formikProps.handleSubmit}
+                        onPress={() => {
+                          showToast();
+                          formikProps.handleSubmit();
+                          //
+                        }}
                         style={{ backgroundColor: "#982B39" }}
                       >
                         <Text style={{ fontWeight: "600" }}>Submit</Text>
