@@ -28,14 +28,6 @@ import {
 } from "react-native";
 
 import * as Linking from "expo-linking";
-import { Dropdown } from "react-native-material-dropdown";
-
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faHandHoldingUsd } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesome5 } from "@expo/vector-icons";
-
-// import GiveMoney from "../../assets/images/giveMoney.svg";
 
 import { Formik } from "formik";
 import * as yup from "yup";

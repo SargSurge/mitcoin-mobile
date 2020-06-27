@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { H2, Button, Text } from "native-base";
-import { AuthSession } from "expo";
+import * as AuthSession from "expo-auth-session";
 import * as SecureStore from "expo-secure-store";
 import { UserContext } from "../UserContext.js";
 
