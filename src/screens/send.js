@@ -116,10 +116,14 @@ export default class Send extends React.Component {
       ? "Select a charity!"
       : "Vote for a charity!";
     explanation_text = this.context.voting_closed
-      ? `Hello   ${this.state.displayName} ! Voting is closed and the top 3 charities have been selected. 
-      Please click the button below to select one of the three charities to which the equivalent
+      ? `Hello ${
+          this.context.user.fullName.split(" ")[0]
+        }! Voting is closed and the top 3 charities have been selected. 
+      Please click the button below to select one of the three charities to which an equivalent
        dollar amount of all your received coins will be donated to.`
-      : `Hello ${this.state.displayName}! You have not yet voted for a
+      : `Hello ${
+          this.context.user.fullName.split(" ")[0]
+        }! You have not yet voted for a
     charity. Please click on the button below to vote for a charity (or charities)
     of your choice on our website.`;
     button_text = this.context.voting_closed
@@ -210,7 +214,11 @@ export default class Send extends React.Component {
     // let result = await WebBrowser.openBrowserAsync(
     //   WEB_URL + "votecharity/" + sample_user.mitid
     // );
-    Linking.openURL(WEB_URL + "votecharity/" + this.context.user.kerberos);
+    let select_url = this.context.voting_closed
+      ? WEB_URL + "selectcharity/" + this.context.user.kerberos
+      : WEB_URL + "votecharity/" + this.context.user.kerberos;
+    Linking.openURL(select_url);
+
     this.setState({ modalVisible: false });
   };
 

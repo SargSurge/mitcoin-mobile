@@ -35,6 +35,7 @@
     "react-native-unimodules": "~0.10.1",
     "react-native-web": "~0.11.7",
     "react-navigation": "^3.13.0",
+    "react-navigation-drawer": "^2.5.0",
     "ws": "^7.1.2",
     "yup": "^0.27.0"
   },

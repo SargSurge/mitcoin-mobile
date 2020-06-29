@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import Fonts from "./fonts.js";
 import * as WebBrowser from "expo-web-browser";
 import { WEB_URL } from "../config.js";
+import * as Linking from "expo-linking";
 
 export default class SelectedCharityView extends React.Component {
   state = { charity_name: "", charity_link: "" };
@@ -27,9 +28,9 @@ export default class SelectedCharityView extends React.Component {
   visitWebsite = async () => {
     let result = await WebBrowser.openBrowserAsync(this.state.charity_link);
   };
-  voteOnWebsite = async () => {
-    let result = await WebBrowser.openBrowserAsync(
-      WEB_URL + "votecharity/" + this.props.mitid
+  selectCharityOnWebsite = async () => {
+    let result = await Linking.openURL(
+      WEB_URL + "selectcharity/" + this.props.mitid
     );
     //rerendering to refresh results
     // this is not working, find other solution
@@ -85,6 +86,7 @@ export default class SelectedCharityView extends React.Component {
       }}
     >
       <TouchableOpacity
+        onPress={this.selectCharityOnWebsite}
         style={{
           borderRadius: 10,
           borderColor: "#9CD6B0",
