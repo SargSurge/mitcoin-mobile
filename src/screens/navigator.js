@@ -56,7 +56,8 @@ const navigator = createSwitchNavigator(
   },
   {
     // initialRouteName: "Login",
-    initialRouteName: "Drawer",
+    // initialRouteName: "Drawer",
+    initialRouteName: "CheckToken",
   }
 );
 

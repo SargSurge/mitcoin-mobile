@@ -37,6 +37,7 @@ import { WEB_URL } from "../config.js";
 import * as WebBrowser from "expo-web-browser";
 import Background from "./imageBackground.js";
 import Fonts from "./fonts.js";
+import * as SecureStore from "expo-secure-store";
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback
@@ -111,6 +112,17 @@ export default class Send extends React.Component {
     sendingToName: "",
   };
 
+  modal_function = () => {
+    if (this.context.voting_closed) {
+      if (this.context.user.selectedCharity === "") {
+        return this.modal();
+      } else return null;
+    } else {
+      if (this.context.user.votedCharities.length === 0) {
+        return this.modal();
+      } else return null;
+    }
+  };
   modal = () => {
     intro_text = this.context.voting_closed
       ? "Select a charity!"
@@ -224,9 +236,14 @@ export default class Send extends React.Component {
 
   fetch_data = async (kerb_or_name) => {
     //Too little data to search through
+    const token = await SecureStore.getItemAsync("refreshToken");
     console.log("func invoked with " + kerb_or_name);
     let response = await fetch(
-      `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`
+      `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: token },
+      }
     );
     let responseJSON = await response.json();
 
@@ -243,12 +260,13 @@ export default class Send extends React.Component {
       receiverKerberos: values.receiverKerberos,
       amount: values.amount,
       comment: values.comment,
-      name: this.state.sendingToName,
+      receiverName: this.state.sendingToName,
+      giverName: this.context.user.fullName,
     });
-
+    const token = await SecureStore.getItemAsync("refreshToken");
     let response = await fetch(WEB_URL + "api/idsend", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Authorization: token },
       body: body,
     });
     let responseJSON = await response.json();
@@ -451,62 +469,63 @@ export default class Send extends React.Component {
                               ? "Double tap to select user"
                               : "No results to show"}
                           </Text>
-                          <ScrollView style={{ padding: 10 }}>
-                            <FlatList
-                              style={{
-                                backgroundColor: "#FFF3F3",
-                                borderWidth: 1,
-                                borderColor: "black",
-                                borderRadius: 8,
-                                height: 450,
-                              }}
-                              data={this.state.searchResults}
-                              keyExtractor={(item, index) => index.toString()}
-                              renderItem={({ item }) => {
-                                return (
-                                  <TouchableOpacity
-                                    style={{
-                                      marginTop: 1,
-                                      marginBottom: 1,
-                                      borderTopWidth: 0.5,
-                                      borderColor: "black",
-                                      borderBottomWidth: 0.5,
-                                      height: 80,
-                                      paddingLeft: 8,
-                                      paddingRight: 8,
-                                    }}
-                                    onPress={() => {
-                                      formikProps.values.receiverKerberos =
-                                        item.kerb;
+                          {/* <ScrollView style={{ padding: 10 }}> */}
+                          <FlatList
+                            style={{
+                              backgroundColor: "#FFF3F3",
+                              borderWidth: 1,
+                              borderColor: "black",
+                              borderRadius: 8,
+                              height: 450,
+                              padding: 10,
+                            }}
+                            data={this.state.searchResults}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => {
+                              return (
+                                <TouchableOpacity
+                                  style={{
+                                    marginTop: 1,
+                                    marginBottom: 1,
+                                    borderTopWidth: 0.5,
+                                    borderColor: "black",
+                                    borderBottomWidth: 0.5,
+                                    height: 80,
+                                    paddingLeft: 8,
+                                    paddingRight: 8,
+                                  }}
+                                  onPress={() => {
+                                    formikProps.values.receiverKerberos =
+                                      item.kerb;
 
-                                      //this is to reload the input value withoout making another network request
-                                      this.setState({
-                                        rerender: false,
-                                        showDropdown: false,
-                                        sendingToName: item.name,
-                                      });
+                                    //this is to reload the input value withoout making another network request
+                                    this.setState({
+                                      rerender: false,
+                                      showDropdown: false,
+                                      sendingToName: item.name,
+                                    });
+                                  }}
+                                >
+                                  <View
+                                    scrollEnabled={false}
+                                    style={{
+                                      flex: 1,
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      flexDirection: "row",
+                                      justifyContent: "space-between",
                                     }}
                                   >
-                                    <View
-                                      scrollEnabled={false}
-                                      style={{
-                                        flex: 1,
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                      }}
-                                    >
-                                      <Text>{item.name}</Text>
-                                      <Text style={{ fontWeight: "bold" }}>
-                                        {item.kerb}
-                                      </Text>
-                                    </View>
-                                  </TouchableOpacity>
-                                );
-                              }}
-                            />
-                          </ScrollView>
+                                    <Text>{item.name}</Text>
+                                    <Text style={{ fontWeight: "bold" }}>
+                                      {item.kerb}
+                                    </Text>
+                                  </View>
+                                </TouchableOpacity>
+                              );
+                            }}
+                          />
+                          {/* </ScrollView> */}
                         </View>
                       ) : // </Item>
                       null}
@@ -584,7 +603,7 @@ export default class Send extends React.Component {
             </KeyboardAvoidingView>
             {/* </ScrollView> */}
           </View>
-          {this.modal()}
+          {this.modal_function()}
         </Container>
       </DismissKeyboard>
     );

@@ -18,6 +18,7 @@ import Fonts from "./fonts.js";
 import { userSample } from "./send.js";
 import VotedCharities from "./votedCharities.js";
 import SelectedCharityView from "./selectedCharityView.js";
+import * as SecureStore from "expo-secure-store";
 
 sample_user = {
   mitid: 924392664,
@@ -47,7 +48,15 @@ export default class Profile extends React.Component {
 
   state = {};
 
+  logout = async () => {
+    await SecureStore.deleteItemAsync("refreshToken");
+    await SecureStore.deleteItemAsync("accessToken");
+    this.props.navigation.navigate("Login");
+  };
+
   render() {
+    console.log("this is user: ", this.context.user);
+
     const user = this.context.user;
 
     // const user = userSample;
@@ -123,7 +132,7 @@ export default class Profile extends React.Component {
             You have received {custom_num(user.receiveBalance)} MITCoins from{" "}
             {custom_num(user.distinctReceives.number)}{" "}
             {user.distinctReceives.number === 1 ? "person" : "different people"}
-            {/* change kerberos to actual ID */}
+            .{/* change kerberos to actual ID */}
           </Text>
 
           {this.context.voting_closed ? (
@@ -141,6 +150,7 @@ export default class Profile extends React.Component {
           {border}
 
           <TouchableOpacity
+            onPress={this.logout}
             style={{
               // borderRadius: 10,
               // borderColor: "red",

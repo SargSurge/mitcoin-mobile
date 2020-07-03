@@ -63,7 +63,7 @@ const schemaDefinition = {
 };
 
 export default HistoryList = ({ actualHistory, contextText }) => (
-  <Content>
+  <View>
     {actualHistory.length !== 0 ? (
       <FlatList
         data={actualHistory.reverse()}
@@ -95,7 +95,7 @@ export default HistoryList = ({ actualHistory, contextText }) => (
         Looks like you haven't sent or received any coins yet.{" "}
       </Text>
     )}
-  </Content>
+  </View>
 );
 
 let styles = StyleSheet.create({

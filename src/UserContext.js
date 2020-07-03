@@ -1,5 +1,4 @@
 import React, { createContext } from "react";
-import { userSample } from "./screens/send";
 
 export const UserContext = createContext();
 
@@ -55,8 +54,8 @@ export class UserProvider extends React.Component {
     return (
       <UserContext.Provider
         value={{
-          // user: this.state.user,
-          user: userSample2,
+          user: this.state.user,
+          // user: userSample2,
           updateUser: this.updateUser,
           voting_closed: this.state.voting_closed,
           updateVotingStatus: this.updateVotingStatus,
