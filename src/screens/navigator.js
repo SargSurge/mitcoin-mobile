@@ -39,10 +39,10 @@ const CustomDrawerContentComponent = (props) => (
 
 const AppDrawer = createDrawerNavigator(
   {
-    "About MITCoin": AboutScreen,
-    Profile: ProfileScreen,
     Send: SendScreen,
+    Profile: ProfileScreen,
     History: HistoryScreen,
+    "About MITCoin": AboutScreen,
   },
   { overlayColor: "#00000055", contentComponent: CustomDrawerContentComponent }
   // { drawerStyle: { width: "100%" } }

@@ -4,6 +4,7 @@ import Fonts from "./fonts.js";
 import * as WebBrowser from "expo-web-browser";
 import { WEB_URL } from "../config.js";
 import * as Linking from "expo-linking";
+import io from "socket.io-client";
 
 export default class SelectedCharityView extends React.Component {
   state = { charity_name: "", charity_link: "" };
@@ -37,6 +38,7 @@ export default class SelectedCharityView extends React.Component {
     this.setState({});
   };
   componentDidMount() {
+    const socket = io(WEB_URL);
     if (this.props.selected_charity !== "") {
       !this.fetch_links();
     }
