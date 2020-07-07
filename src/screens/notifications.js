@@ -1,23 +1,26 @@
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
-import React, { useState, useEffect } from "react";
-import { Text, View, Button, Platform } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { Text, View, Platform, Button } from "react-native";
+import { WEB_URL } from "../config.js";
+import { UserContext } from "../UserContext.js";
+import * as SecureStore from "expo-secure-store";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: false,
+//     shouldSetBadge: false,
+//   }),
+// });
 
-export default function App() {
+export default function NotificationTest() {
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
+    registerForPushNotificationsAsync("bntanga").then((token) =>
       setExpoPushToken(token)
     );
     Notifications.addNotificationReceivedListener((notification) => {
@@ -27,9 +30,9 @@ export default function App() {
       console.log(response);
     });
 
-    return () => {
-      Notifications.removeAllNotificationListeners();
-    };
+    // return () => {
+    //   Notifications.removeAllNotificationListeners();
+    // };
   });
 
   return (
@@ -51,20 +54,49 @@ export default function App() {
           {notification &&
             JSON.stringify(notification.request.content.data.body)}
         </Text>
+        <Button
+          title="Press to Send Notification"
+          onPress={async () => {
+            await sendPushNotification(expoPushToken);
+          }}
+        />
       </View>
-      <Button
-        title="Press to Send Notification"
-        onPress={async () => {
-          await sendPushNotification(expoPushToken);
-        }}
-      />
     </View>
   );
 }
 
+async function sendPushNotification(expoPushToken) {
+  const message = {
+    to: expoPushToken,
+    sound: "default",
+    title: "Received MITCoins",
+    body: "Aron Ricardo Perez-Lopez has sent you 15 MITCoins!",
+    data: { data: "goes here" },
+  };
+
+  await fetch("https://exp.host/--/api/v2/push/send", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Accept-encoding": "gzip, deflate",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(message),
+  });
+}
 // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
 
-async function registerForPushNotificationsAsync() {
+async function registerForPushNotificationsAsync(kerberos) {
+  //   let token = await fetch(
+  //     `${WEB_URL}api/get_notification_token?kerberos=kerberos`
+  //   );
+  //   let tokenJSON = await token.json();
+  //   if (tokenJSON.notificationToken !== "") {
+  //     console.log("this is response token " + tokenJSON.notificationToken);
+  //     return tokenJSON.notificationToken;
+  //   }
+
+  console.log("we in function");
   let token;
   if (Constants.isDevice) {
     const { status: existingStatus } = await Permissions.getAsync(
@@ -79,8 +111,13 @@ async function registerForPushNotificationsAsync() {
       alert("Failed to get push token for push notification!");
       return;
     }
+    let tokenCheck = await SecureStore.getItemAsync("notificationToken");
+    if (tokenCheck !== null) {
+      console.log("found token " + tokenCheck);
+      return tokenCheck;
+    }
     token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
+    console.log("notification token is" + token);
   } else {
     alert("Must use physical device for Push Notifications");
   }
@@ -94,7 +131,32 @@ async function registerForPushNotificationsAsync() {
     });
   }
 
-  return token;
+  let body = JSON.stringify({
+    notificationToken: token,
+    // kerberos: contextObject.user.kerberos,
+    kerberos: kerberos,
+  });
+  console.log("Notifications--" + "body being sent: " + body.notificationToken);
+
+  let response = await fetch(`${WEB_URL}api/set_notification_token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: body,
+  });
+
+  console.log("done fetching");
+  //   console.log("this is weird response" + JSON.stringify(response));
+  let responseJSON = await response.json();
+
+  //   console.log(" Notifications-- " + "user: " + JSON.stringify(responseJSON));
+  //   console.log(
+  //     "this should be token" + JSON.stringify(responseJSON.user.notificationToken)
+  //   );
+  await SecureStore.setItemAsync(
+    "notificationToken",
+    responseJSON.user.notificationToken
+  );
+  return responseJSON.notificationToken;
 }
 
 export { registerForPushNotificationsAsync };

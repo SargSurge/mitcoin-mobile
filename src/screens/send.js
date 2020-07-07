@@ -38,6 +38,7 @@ import * as WebBrowser from "expo-web-browser";
 import Background from "./imageBackground.js";
 import Fonts from "./fonts.js";
 import * as SecureStore from "expo-secure-store";
+import { registerForPushNotificationsAsync } from "./notifications.js";
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback
@@ -237,7 +238,7 @@ export default class Send extends React.Component {
   fetch_data = async (kerb_or_name) => {
     //Too little data to search through
     const token = await SecureStore.getItemAsync("refreshToken");
-    console.log("func invoked with " + kerb_or_name);
+    // console.log("func invoked with " + kerb_or_name);
     let response = await fetch(
       `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`,
       {
@@ -293,6 +294,32 @@ export default class Send extends React.Component {
       .required("Required!"),
   });
 
+  // test_notifications = async () => {
+  //   let body = {
+  //     notificationToken: "jgnrnfkdofdnbhg",
+  //     // kerberos: contextObject.user.kerberos,
+  //     kerberos: "bntanga",
+  //   };
+  //   console.log("Send--" + "body being sent: " + body);
+
+  //   let response = await fetch(`${WEB_URL}api/set_notifcation_token`, {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: body,
+  //   });
+
+  //   console.log("done fetching");
+  //   console.log("this is weird response" + JSON.stringify(response));
+
+  //   let responseJSON = await response.json();
+
+  //   console.log(" Notifications-- " + "user: " + responseJSON);
+  // };
+
+  componentDidMount() {
+    registerForPushNotificationsAsync(this.context.user.kerberos);
+    // this.test_notifications();
+  }
   render() {
     const user = this.context.user;
     // const user = userSample;

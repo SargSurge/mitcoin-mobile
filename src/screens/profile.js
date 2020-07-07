@@ -55,7 +55,7 @@ export default class Profile extends React.Component {
   };
 
   render() {
-    console.log("this is user: ", this.context.user);
+    // console.log("this is user: ", this.context.user);
 
     const user = this.context.user;
 
