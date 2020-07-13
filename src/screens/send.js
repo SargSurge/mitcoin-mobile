@@ -39,6 +39,7 @@ import Background from "./imageBackground.js";
 import Fonts from "./fonts.js";
 import * as SecureStore from "expo-secure-store";
 import { registerForPushNotificationsAsync } from "./notifications.js";
+import io from "socket.io-client";
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback
@@ -255,6 +256,14 @@ export default class Send extends React.Component {
     });
   };
 
+  init_socket = async () => {
+    const socket = io(WEB_URL);
+    socket.on("connect", async () => {
+      console.log("this should be id for real " + socket.id); // 'G5p5...'
+      await this.context.updateSocketObject(socket);
+    });
+  };
+
   handlePress = async (values, actions) => {
     let body = JSON.stringify({
       giverKerberos: this.context.user.kerberos,
@@ -317,6 +326,7 @@ export default class Send extends React.Component {
   // };
 
   componentDidMount() {
+    this.init_socket();
     registerForPushNotificationsAsync(this.context.user.kerberos);
     // this.test_notifications();
   }

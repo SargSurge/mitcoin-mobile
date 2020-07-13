@@ -7,14 +7,6 @@ import { WEB_URL } from "../config.js";
 import { UserContext } from "../UserContext.js";
 import * as SecureStore from "expo-secure-store";
 
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: false,
-//     shouldSetBadge: false,
-//   }),
-// });
-
 export default function NotificationTest() {
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);

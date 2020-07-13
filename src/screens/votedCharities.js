@@ -107,7 +107,9 @@ export default class VotedCharities extends React.Component {
     // let result = await WebBrowser.openBrowserAsync(
     //   WEB_URL + "votecharity/" + this.props.mitid
     // );
-    Linking.openURL(WEB_URL + "votecharity/" + this.props.mitid);
+    Linking.openURL(
+      WEB_URL + "votecharity/" + this.props.mitid + "/" + this.props.socketid
+    );
     //rerendering to refresh results
     // this is not working, find other solution
     this.setState({});
@@ -146,7 +148,7 @@ export default class VotedCharities extends React.Component {
         <Text
           style={{
             alignSelf: "center",
-            ...Fonts.title,
+            ...Fonts.regular_text,
             //   fontWeight: "500",
             marginTop: 24,
             fontSize: 18,

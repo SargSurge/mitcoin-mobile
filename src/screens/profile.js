@@ -11,6 +11,7 @@ import {
   ImageBackground,
   ScrollView,
 } from "react-native";
+import { WEB_URL } from "../config.js";
 import { UserContext } from "../UserContext.js";
 import Header from "./header.js";
 import Background from "./imageBackground.js";
@@ -19,6 +20,7 @@ import { userSample } from "./send.js";
 import VotedCharities from "./votedCharities.js";
 import SelectedCharityView from "./selectedCharityView.js";
 import * as SecureStore from "expo-secure-store";
+import io from "socket.io-client";
 
 sample_user = {
   mitid: 924392664,
@@ -53,6 +55,37 @@ export default class Profile extends React.Component {
     await SecureStore.deleteItemAsync("accessToken");
     this.props.navigation.navigate("Login");
   };
+
+  init_socket_part_2 = async () => {
+    let body = JSON.stringify({
+      socketid: this.context.socket_object.id,
+      kerberos: this.context.user.kerberos,
+    });
+    console.log("body being sent " + body);
+    let response = await fetch(`${WEB_URL}api/initsocket`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body,
+    });
+    let responseJSON = await response.json();
+    console.log("what is this response?" + JSON.stringify(responseJSON));
+  };
+
+  componentDidMount() {
+    this.init_socket_part_2();
+    this.context.socket_object.on("charity_selected", (charity) => {
+      console.log("socket emitted something" + charity);
+      this.context.user.selectedCharity = charity;
+      this.context.updateUser(this.context.user);
+      this.setState({});
+    });
+
+    this.context.socket_object.on("charities_voted", (voted_charities) => {
+      this.context.user.votedCharities = voted_charities;
+      this.context.updateUser(this.context.user);
+      this.setState({});
+    });
+  }
 
   render() {
     // console.log("this is user: ", this.context.user);

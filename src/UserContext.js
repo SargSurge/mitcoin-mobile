@@ -38,7 +38,12 @@ let userSample2 = {
   ],
 };
 export class UserProvider extends React.Component {
-  state = { user: {}, voting_closed: true, initial_login: false };
+  state = {
+    user: {},
+    voting_closed: true,
+    initial_login: false,
+    socket_object: null,
+  };
 
   updateUser = (user) => {
     this.setState({ user: user });
@@ -48,6 +53,10 @@ export class UserProvider extends React.Component {
   };
   updateInitialLogin = (status) => {
     this.setState({ initial_login: status });
+  };
+
+  updateSocketObject = (socket) => {
+    this.setState({ socket_object: socket });
   };
 
   render() {
@@ -61,6 +70,8 @@ export class UserProvider extends React.Component {
           updateVotingStatus: this.updateVotingStatus,
           initial_login: this.state.initial_login,
           updateInitialLogin: this.updateInitialLogin,
+          socket_object: this.state.socket_object,
+          updateSocketObject: this.updateSocketObject,
         }}
       >
         {this.props.children}
