@@ -43,6 +43,13 @@ export default class SelectedCharityView extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    // Typical usage (don't forget to compare props):
+    if (this.props.selected_charity !== prevProps.selected_charity) {
+      this.fetch_links();
+    }
+  }
+
   no_charity_present_button = (
     <View
       style={{

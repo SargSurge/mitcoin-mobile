@@ -107,15 +107,20 @@ export default class VotedCharities extends React.Component {
     // let result = await WebBrowser.openBrowserAsync(
     //   WEB_URL + "votecharity/" + this.props.mitid
     // );
-    Linking.openURL(
-      WEB_URL + "votecharity/" + this.props.mitid + "/" + this.props.socketid
-    );
+    Linking.openURL(WEB_URL + "votecharity/" + this.props.mitid);
     //rerendering to refresh results
     // this is not working, find other solution
     this.setState({});
   };
   componentDidMount() {
     this.fetch_links();
+  }
+
+  componentDidUpdate(prevProps) {
+    // Typical usage (don't forget to compare props):
+    if (this.props.charities !== prevProps.charities) {
+      this.fetch_links();
+    }
   }
   render() {
     let charityViews = this.state.charities_with_links.map((charity, index) => (

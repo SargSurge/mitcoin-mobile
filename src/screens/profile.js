@@ -48,7 +48,7 @@ sample_user_modified = {
 export default class Profile extends React.Component {
   static contextType = UserContext;
 
-  state = {};
+  state = { testtext: "Fake words" };
 
   logout = async () => {
     await SecureStore.deleteItemAsync("refreshToken");
@@ -74,15 +74,20 @@ export default class Profile extends React.Component {
   componentDidMount() {
     this.init_socket_part_2();
     this.context.socket_object.on("charity_selected", (charity) => {
-      console.log("socket emitted something" + charity);
+      console.log("socket emitted something " + charity);
+      // let usercopy = JSON.parse(JSON.stringify(this.context.user));
+
+      // usercopy.selectedCharity = charity;
+      // console.log("usercopy" + JSON.stringify(usercopy));
       this.context.user.selectedCharity = charity;
-      this.context.updateUser(this.context.user);
+      // this.context.updateUser(this.context.user);
+      // console.log("this is user charitty " + this.context.user.selectedCharity);
       this.setState({});
     });
 
     this.context.socket_object.on("charities_voted", (voted_charities) => {
       this.context.user.votedCharities = voted_charities;
-      this.context.updateUser(this.context.user);
+      // this.context.updateUser(this.context.user);
       this.setState({});
     });
   }
