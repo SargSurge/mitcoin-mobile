@@ -50,6 +50,12 @@ export default class CheckToken extends React.Component {
   };
 
   render() {
-    return <Text>Loading...</Text>;
+    return (
+      <Text
+        style={{ flex: 1, textAlign: "center", height: "100%", width: "100%" }}
+      >
+        Loading...
+      </Text>
+    );
   }
 }

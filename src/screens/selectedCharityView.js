@@ -187,7 +187,7 @@ let styles = StyleSheet.create({
     borderRadius: 10,
     padding: 35,
     shadowColor: "#000",
-    borderColor: "#2646EC",
+    borderColor: "#9CD6B0",
     borderWidth: 0.5,
     shadowOffset: {
       width: 0,

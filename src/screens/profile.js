@@ -66,7 +66,7 @@ export default class Profile extends React.Component {
           ...Fonts.regular_text,
           fontWeight: "500",
           fontSize: 18,
-          color: "green",
+          color: "#982B39",
         }}
       >
         {num}
@@ -192,7 +192,7 @@ let styles = StyleSheet.create({
     borderRadius: 10,
     padding: 35,
     shadowColor: "#000",
-    borderColor: "#2646EC",
+    color: "#982B39",
     borderWidth: 0.5,
     shadowOffset: {
       width: 0,
