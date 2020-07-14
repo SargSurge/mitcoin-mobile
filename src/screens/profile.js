@@ -168,12 +168,12 @@ export default class Profile extends React.Component {
           {this.context.voting_closed ? (
             <SelectedCharityView
               selected_charity={user.selectedCharity}
-              mitid={user.kerberos}
+              mitid={user.mitid}
             />
           ) : (
             <VotedCharities
               charities={user.votedCharities}
-              mitid={user.kerberos}
+              mitid={user.mitid}
             />
           )}
 

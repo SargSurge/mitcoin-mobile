@@ -73,7 +73,8 @@ export default HistoryList = ({ actualHistory, contextText }) => (
         renderItem={({ item }) => {
           return (
             <HistoryCard
-              date={moment(item.date).format("MM-DD-YYYY")}
+              // date={moment(item.date).format("MM-DD-YYYY")}
+              date={moment(item.date).format("MMMM Do YYYY, h:mm a")}
               toFrom={item.tofrom}
               amount={item.amount}
               comment={item.comment}

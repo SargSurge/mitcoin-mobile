@@ -225,8 +225,8 @@ export default class Send extends React.Component {
     //   WEB_URL + "votecharity/" + sample_user.mitid
     // );
     let select_url = this.context.voting_closed
-      ? WEB_URL + "selectcharity/" + this.context.user.kerberos
-      : WEB_URL + "votecharity/" + this.context.user.kerberos;
+      ? WEB_URL + "selectcharity/" + this.context.user.mitid
+      : WEB_URL + "votecharity/" + this.context.user.mitid;
     Linking.openURL(select_url);
 
     this.setState({ modalVisible: false });
