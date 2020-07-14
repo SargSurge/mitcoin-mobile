@@ -180,7 +180,7 @@ export default class Profile extends React.Component {
           {border}
 
           <TouchableOpacity
-            onPress={this.logout}
+            onPress={() => setTimeout(this.logout, 200)}
             style={{
               // borderRadius: 10,
               // borderColor: "red",

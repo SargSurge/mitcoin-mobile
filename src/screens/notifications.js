@@ -154,9 +154,11 @@ async function request_and_set_new_expo_token(token, kerberos) {
   });
   console.log("Notifications--" + "body being sent: " + body);
 
+  const authToken = await SecureStore.getItemAsync("refreshToken");
+
   let response = await fetch(`${WEB_URL}api/set_notification_token`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Authorization: authToken },
     body: body,
   });
 
