@@ -1,11 +1,14 @@
 import React from "react";
+import { View } from "react-native";
 import { Content, Text } from "native-base";
 import Fonts from "../fonts.js";
+import Background from "../imageBackground.js";
 
 export default class TheProject extends React.Component {
   render() {
     return (
-      <Content style={{ flex: 1, paddingTop: 30 }}>
+      <View style={{ flex: 1, paddingTop: 30 }}>
+        <Background />
         <Text
           style={{ fontSize: 18, textAlign: "center", ...Fonts.regular_text }}
         >
@@ -13,7 +16,7 @@ export default class TheProject extends React.Component {
           mission to empower charitable causes by rewarding good deeds performed
           around MIT's campus.
         </Text>
-      </Content>
+      </View>
     );
   }
 }

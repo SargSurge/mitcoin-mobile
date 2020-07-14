@@ -1,10 +1,12 @@
 import React from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { UserContext } from "../UserContext.js";
 import * as Notifications from "expo-notifications";
+import Background from "./imageBackground.js";
 
 import { WEB_URL } from "../config.js";
+import { Spinner } from "native-base";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -23,7 +25,6 @@ export default class CheckToken extends React.Component {
       this.props.navigation.navigate("Login");
       return;
     }
-
     // Check if the token is still valid
     try {
       let options = {
@@ -31,7 +32,6 @@ export default class CheckToken extends React.Component {
           Authorization: token,
         },
       };
-
       let response = await fetch(WEB_URL + "auth/verify", options);
       let responseJSON = await response.json();
       console.log("what is this check token" + responseJSON.user);
@@ -51,11 +51,28 @@ export default class CheckToken extends React.Component {
 
   render() {
     return (
-      <Text
-        style={{ flex: 1, textAlign: "center", height: "100%", width: "100%" }}
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          width: "100%",
+          flexDirection: "column",
+        }}
       >
-        Loading...
-      </Text>
+        <Background />
+        <Text
+          style={{
+            textAlign: "center",
+            width: "100%",
+            fontSize: 24,
+            marginBottom: 14,
+          }}
+        >
+          Loading...
+        </Text>
+        <Spinner color="red" />
+      </View>
     );
   }
 }

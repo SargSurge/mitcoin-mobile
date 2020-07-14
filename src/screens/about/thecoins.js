@@ -1,7 +1,8 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Content, Card, CardItem, H2, Body, Text } from "native-base";
 import AboutCard from "./aboutCard.js";
+import Background from "../imageBackground.js";
 
 export default class TheCoins extends React.Component {
   render() {
@@ -25,13 +26,14 @@ export default class TheCoins extends React.Component {
       </Text>
     );
     return (
-      <Content style={styles.container}>
+      <View style={styles.container}>
+        <Background />
         <AboutCard title="Your Wallet" body={wallet_body} />
 
         <AboutCard title="Sending Coins" body={send_body} />
 
         <AboutCard title={"Charity"} body={charity_body} />
-      </Content>
+      </View>
     );
   }
 }

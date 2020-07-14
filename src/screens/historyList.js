@@ -3,6 +3,7 @@ import { View, StyleSheet, FlatList, Text } from "react-native";
 import { Content } from "native-base";
 import moment from "moment";
 import Fonts from "./fonts.js";
+import Background from "./imageBackground.js";
 
 SingleField = ({ text, value }) => (
   <View
@@ -63,7 +64,8 @@ const schemaDefinition = {
 };
 
 export default HistoryList = ({ actualHistory, contextText }) => (
-  <View>
+  <View style={{ height: "100%", width: "100%" }}>
+    <Background />
     {actualHistory.length !== 0 ? (
       <FlatList
         data={actualHistory.reverse()}
