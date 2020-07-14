@@ -84,15 +84,18 @@ export default HistoryList = ({ actualHistory, contextText }) => (
     ) : (
       <Text
         style={{
-          marginTop: 40,
-          flex: 1,
+          marginTop: 30,
+          // flex: 1,
           alignSelf: "center",
           ...Fonts.regular_text,
-          fontSize: 16,
+          fontSize: 18,
           textAlign: "center",
+          height: "100%",
         }}
       >
-        Looks like you haven't sent or received any coins yet.{" "}
+        {contextText === "sendHistory"
+          ? "Looks like you haven't sent any coins yet."
+          : "Looks like you haven't received any coins yet"}
       </Text>
     )}
   </View>
@@ -103,7 +106,7 @@ let styles = StyleSheet.create({
     margin: 10,
     backgroundColor: "white",
     borderRadius: 10,
-    borderColor: "#F194FF",
+    borderColor: "#9CD6B0",
     borderWidth: 1,
     padding: 35,
     shadowColor: "#000",

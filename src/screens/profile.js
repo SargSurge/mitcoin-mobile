@@ -55,33 +55,25 @@ export default class Profile extends React.Component {
     await SecureStore.deleteItemAsync("accessToken");
     this.props.navigation.navigate("Login");
   };
-
-  init_socket_part_2 = async () => {
-    let body = JSON.stringify({
-      socketid: this.context.socket_object.id,
-      kerberos: this.context.user.kerberos,
-    });
-    console.log("body being sent " + body);
-    let response = await fetch(`${WEB_URL}api/initsocket`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: body,
-    });
-    let responseJSON = await response.json();
-    console.log("what is this response?" + JSON.stringify(responseJSON));
-  };
-
+  // init_socket_part_2 = async () => {
+  //   let body = JSON.stringify({
+  //     socketid: this.context.socket_object.id,
+  //     kerberos: this.context.user.kerberos,
+  //   });
+  //   console.log("body being sent " + body);
+  //   let response = await fetch(`${WEB_URL}api/initsocket`, {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: body,
+  //   });
+  //   let responseJSON = await response.json();
+  //   console.log("what is this response?" + JSON.stringify(responseJSON));
+  // };
   componentDidMount() {
-    this.init_socket_part_2();
+    // this.init_socket_part_2();
     this.context.socket_object.on("charity_selected", (charity) => {
       console.log("socket emitted something " + charity);
-      // let usercopy = JSON.parse(JSON.stringify(this.context.user));
-
-      // usercopy.selectedCharity = charity;
-      // console.log("usercopy" + JSON.stringify(usercopy));
       this.context.user.selectedCharity = charity;
-      // this.context.updateUser(this.context.user);
-      // console.log("this is user charitty " + this.context.user.selectedCharity);
       this.setState({});
     });
 
@@ -196,6 +188,7 @@ export default class Profile extends React.Component {
               padding: 10,
               elevation: 2,
               marginTop: 30,
+              marginBottom: 60,
             }}
           >
             <Text

@@ -21,8 +21,12 @@ NoCharitySelectedView = () => (
           alignSelf: "center",
           ...Fonts.regular_text,
           fontSize: 16,
-          fontWeight: "700",
-          color: "#982B39",
+          fontWeight: "400",
+          width: "100%",
+          textAlign: "center",
+          // flex: 1,
+
+          // color: "#982B39",
         }}
       >
         You have not voted for any charity

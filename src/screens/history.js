@@ -19,6 +19,14 @@ import Background from "./imageBackground.js";
 import { userSample } from "./send.js";
 export default class History extends React.Component {
   static contextType = UserContext;
+
+  componentDidMount() {
+    this.context.socket_object.on("receive_history", (history) => {
+      console.log("socket emitted something " + history);
+      this.context.user.receiveCharity = history;
+      this.setState({});
+    });
+  }
   render() {
     const user = this.context.user;
     // const user = userSample;

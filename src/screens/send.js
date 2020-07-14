@@ -132,14 +132,10 @@ export default class Send extends React.Component {
     explanation_text = this.context.voting_closed
       ? `Hello ${
           this.context.user.fullName.split(" ")[0]
-        }! Voting is closed and the top 3 charities have been selected. 
-      Please click the button below to select one of the three charities to which an equivalent
-       dollar amount of all your received coins will be donated to.`
+        }! Voting is closed and the top 3 charities have been selected. Please click the button below to select one of the three charities to which an equivalent dollar amount of all your received coins will be donated to.`
       : `Hello ${
           this.context.user.fullName.split(" ")[0]
-        }! You have not yet voted for a
-    charity. Please click on the button below to vote for a charity (or charities)
-    of your choice on our website.`;
+        }! You have not yet voted for a charity. Please click on the button below to vote for a charity (or charities) of your choice on our website.`;
     button_text = this.context.voting_closed
       ? "Select a charity"
       : "Vote for charities";
@@ -264,6 +260,22 @@ export default class Send extends React.Component {
     });
   };
 
+  init_socket_part_2 = async () => {
+    const token = await SecureStore.getItemAsync("refreshToken");
+    let body = JSON.stringify({
+      socketid: this.context.socket_object.id,
+      kerberos: this.context.user.kerberos,
+    });
+    console.log("body being sent " + body);
+    let response = await fetch(`${WEB_URL}api/initsocket`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: token },
+      body: body,
+    });
+    let responseJSON = await response.json();
+    console.log("what is this response?" + JSON.stringify(responseJSON));
+  };
+
   handlePress = async (values, actions) => {
     let body = JSON.stringify({
       giverKerberos: this.context.user.kerberos,
@@ -303,30 +315,9 @@ export default class Send extends React.Component {
       .required("Required!"),
   });
 
-  // test_notifications = async () => {
-  //   let body = {
-  //     notificationToken: "jgnrnfkdofdnbhg",
-  //     // kerberos: contextObject.user.kerberos,
-  //     kerberos: "bntanga",
-  //   };
-  //   console.log("Send--" + "body being sent: " + body);
-
-  //   let response = await fetch(`${WEB_URL}api/set_notifcation_token`, {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: body,
-  //   });
-
-  //   console.log("done fetching");
-  //   console.log("this is weird response" + JSON.stringify(response));
-
-  //   let responseJSON = await response.json();
-
-  //   console.log(" Notifications-- " + "user: " + responseJSON);
-  // };
-
   componentDidMount() {
     this.init_socket();
+    setTimeout(this.init_socket_part_2, 5000);
     registerForPushNotificationsAsync(this.context.user.kerberos);
     // this.test_notifications();
   }
@@ -354,6 +345,7 @@ export default class Send extends React.Component {
 
     return (
       <DismissKeyboard>
+        {/* <ScrollView> */}
         <Container>
           <Toast
             ref="toast"
@@ -618,9 +610,7 @@ export default class Send extends React.Component {
                         />
                       </Item>
                     </View>
-                    {formikProps.isSubmitting ? (
-                      <Spinner />
-                    ) : (
+                    {formikProps.isSubmitting ? null : ( // <Spinner />
                       <Button
                         block
                         danger
@@ -629,7 +619,10 @@ export default class Send extends React.Component {
                           formikProps.handleSubmit();
                           //
                         }}
-                        style={{ backgroundColor: "#982B39" }}
+                        style={{
+                          backgroundColor: "#982B39",
+                          // marginBottom: 1000,
+                        }}
                       >
                         <Text style={{ fontWeight: "600" }}>Submit</Text>
                       </Button>
@@ -642,6 +635,7 @@ export default class Send extends React.Component {
           </View>
           {this.modal_function()}
         </Container>
+        {/* </ScrollView> */}
       </DismissKeyboard>
     );
   }
@@ -684,10 +678,10 @@ const styles = StyleSheet.create({
   textStyle: {
     color: "white",
     fontWeight: "bold",
-    textAlign: "center",
+    // textAlign: "center",
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center",
+    // textAlign: "center",
   },
 });

@@ -164,19 +164,34 @@ export default class SelectedCharityView extends React.Component {
           Your charity of choice is:
         </Text>
         <View style={{ ...styles.card, marginBottom: 40 }}>
-          <Text
-            style={{
-              alignSelf: "center",
-              ...Fonts.regular_text,
-              fontSize: 20,
-              fontWeight: this.props.selected_charity === "" ? "300" : "600",
-              color: "#982B39",
-            }}
-          >
-            {this.props.selected_charity === ""
-              ? "You have not selected any charity"
-              : this.state.charity_name}
-          </Text>
+          {this.props.selected_charity === "" ? (
+            <Text
+              style={{
+                alignSelf: "center",
+                ...Fonts.regular_text,
+                fontSize: 20,
+                fontWeight: "400",
+                color: "#982B39",
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              You have not selected any charity
+            </Text>
+          ) : (
+            <Text
+              style={{
+                alignSelf: "center",
+                ...Fonts.regular_text,
+                fontSize: 20,
+                fontWeight: this.props.selected_charity === "" ? "300" : "600",
+                color: "#982B39",
+              }}
+            >
+              {this.state.charity_name}
+            </Text>
+          )}
+
           {this.props.selected_charity === ""
             ? this.no_charity_present_button
             : this.charity_present_view}

@@ -97,7 +97,14 @@ async function registerForPushNotificationsAsync(kerberos) {
     let finalStatus = existingStatus;
     if (existingStatus !== "granted") {
       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      //in case permission is being asked for again
       finalStatus = status;
+      if (status === "granted") {
+        token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log("after asking for permission");
+        request_and_set_new_expo_token(token, kerberos);
+        return;
+      }
     }
     if (finalStatus !== "granted") {
       alert("Failed to get push token for push notification!");
@@ -106,6 +113,18 @@ async function registerForPushNotificationsAsync(kerberos) {
     let tokenCheck = await SecureStore.getItemAsync("notificationToken");
     if (tokenCheck !== null) {
       console.log("found token " + tokenCheck);
+      if (Platform.OS === "android") {
+        Notifications.setNotificationChannelAsync("default", {
+          name: "default",
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: "#FF231F7C",
+        });
+      }
+      //   tokenCheck = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log("after getting from secure store");
+      console.log("this is token check " + tokenCheck);
+      //   request_and_set_new_expo_token(tokenCheck, kerberos);
       return tokenCheck;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
@@ -123,12 +142,17 @@ async function registerForPushNotificationsAsync(kerberos) {
     });
   }
 
+  request_and_set_new_expo_token(token, kerberos);
+}
+
+async function request_and_set_new_expo_token(token, kerberos) {
+  console.log("this is token function is receiving " + token);
   let body = JSON.stringify({
     notificationToken: token,
     // kerberos: contextObject.user.kerberos,
     kerberos: kerberos,
   });
-  console.log("Notifications--" + "body being sent: " + body.notificationToken);
+  console.log("Notifications--" + "body being sent: " + body);
 
   let response = await fetch(`${WEB_URL}api/set_notification_token`, {
     method: "POST",
