@@ -1,5 +1,5 @@
 import React from "react";
-import Toast from "react-native-easy-toast";
+import Toast, { DURATION } from "react-native-easy-toast";
 import { Form, Item, Input, View, H1, Button, Label, Text } from "native-base";
 import {
   ScrollView,

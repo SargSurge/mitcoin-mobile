@@ -3,11 +3,7 @@
     "name": "MITCoin",
     "slug": "mitcoin",
     "privacy": "public",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,11 +15,10 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "com.mhh.mitcoin"
+      "bundleIdentifier": "com.mhh.mitcoin",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "package": "com.mhh.mitcoin",
