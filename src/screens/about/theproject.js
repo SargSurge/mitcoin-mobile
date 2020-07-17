@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { Content, Text } from "native-base";
+import { Text } from "native-base";
 import Fonts from "../fonts.js";
 import Background from "../imageBackground.js";
 

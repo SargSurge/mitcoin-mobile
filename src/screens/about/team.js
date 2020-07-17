@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Content, Card, Text, H2 } from "native-base";
+import { Content, Text } from "native-base";
 import AboutCard from "./aboutCard.js";
 
 export default class TheTeam extends React.Component {

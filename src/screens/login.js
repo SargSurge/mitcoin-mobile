@@ -43,10 +43,8 @@ export default class Login extends React.Component {
         CLIENT_ID,
     });
     let code = result.params.code;
-    console.log("this is code", code);
     let response = await fetch(WEB_URL + "auth/get_token?code=" + code);
     let responseJSON = await response.json();
-    // console.log("result from logging in: \n", responseJSON);
 
     if (responseJSON) {
       await SecureStore.setItemAsync("accessToken", responseJSON.access_token);
@@ -56,9 +54,7 @@ export default class Login extends React.Component {
       );
       await this.context.updateUser(responseJSON.user);
       await this.context.updateVotingStatus(responseJSON.is_voting_closed);
-      if (responseJSON.first_login) {
-        console.log("first time login in!!");
-      }
+
       this.props.navigation.navigate("Send");
     } else {
       console.log("ERRRRRRR");

@@ -1,31 +1,14 @@
 import React from "react";
-import Toast, { DURATION } from "react-native-easy-toast";
-import {
-  Container,
-  Content,
-  Form,
-  Item,
-  Input,
-  View,
-  H1,
-  Button,
-  Spinner,
-  Label,
-  Text,
-  Fab,
-} from "native-base";
+import Toast from "react-native-easy-toast";
+import { Form, Item, Input, View, H1, Button, Label, Text } from "native-base";
 import {
   ScrollView,
-  KeyboardAvoidingView,
   StyleSheet,
   FlatList,
-  Platform,
-  Image,
   Modal,
   Keyboard,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  TouchableHighlight,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -35,7 +18,7 @@ import * as yup from "yup";
 import { UserContext } from "../UserContext.js";
 import Header from "./header.js";
 import { WEB_URL } from "../config.js";
-import * as WebBrowser from "expo-web-browser";
+
 import Background from "./imageBackground.js";
 import Fonts from "./fonts.js";
 import * as SecureStore from "expo-secure-store";
@@ -47,7 +30,6 @@ const DismissKeyboard = ({ children, dismissList }) => (
     onPress={() => {
       Keyboard.dismiss();
       dismissList();
-      console.log("dismiss pressed");
     }}
     styles={{
       width: "100%",
@@ -241,7 +223,7 @@ export default class Send extends React.Component {
   fetch_data = async (kerb_or_name) => {
     //Too little data to search through
     const token = await SecureStore.getItemAsync("refreshToken");
-    // console.log("func invoked with " + kerb_or_name);
+
     let response = await fetch(
       `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`,
       {
@@ -259,25 +241,19 @@ export default class Send extends React.Component {
   };
 
   test_kerb = (kerb) => {
-    console.log("this is users " + JSON.stringify(this.state.searchResults));
-
-    console.log("this is kerb " + kerb);
     let i;
     for (i = 0; i < this.state.searchResults.length; i++) {
       let user = this.state.searchResults[i];
       if (user.kerb === kerb) {
-        console.log("we in true");
         return true;
       }
     }
 
-    console.log("we in false");
     return false;
   };
   init_socket = async () => {
     const socket = io(WEB_URL);
     socket.on("connect", async () => {
-      console.log("this should be id for real " + socket.id); // 'G5p5...'
       await this.context.updateSocketObject(socket);
     });
   };
@@ -288,14 +264,13 @@ export default class Send extends React.Component {
       socketid: this.context.socket_object.id,
       kerberos: this.context.user.kerberos,
     });
-    console.log("body being sent " + body);
+
     let response = await fetch(`${WEB_URL}api/initsocket`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: token },
       body: body,
     });
     let responseJSON = await response.json();
-    console.log("what is this response?" + JSON.stringify(responseJSON));
   };
 
   handlePress = async (values, actions) => {
@@ -314,7 +289,7 @@ export default class Send extends React.Component {
       body: body,
     });
     let responseJSON = await response.json();
-    // console.log("this is a new transaction", responseJSON);
+
     this.context.updateUser(responseJSON);
     await actions.setSubmitting(false);
     await actions.resetForm();
@@ -645,8 +620,6 @@ export default class Send extends React.Component {
                         onPress={() => {
                           // showToast();
                           formikProps.handleSubmit();
-                          // console.log("if fails, what?", res);
-                          //
                         }}
                         style={{
                           backgroundColor: "#982B39",

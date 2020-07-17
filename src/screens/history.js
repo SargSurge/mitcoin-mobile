@@ -1,28 +1,15 @@
 import React from "react";
-import { View, FlatList } from "react-native";
-import {
-  Text,
-  ListItem,
-  Container,
-  Content,
-  Body,
-  Title,
-  Right,
-  Tab,
-  Tabs,
-} from "native-base";
+import {} from "react-native";
+import { Container, Tab, Tabs } from "native-base";
 import { UserContext } from "../UserContext.js";
-import moment from "moment";
 import HistoryList from "./historyList.js";
 import Header from "./header.js";
 import Background from "./imageBackground.js";
-import { userSample } from "./send.js";
 export default class History extends React.Component {
   static contextType = UserContext;
 
   componentDidMount() {
     this.context.socket_object.on("receive_history", (history) => {
-      console.log("socket emitted something " + history);
       this.context.user.receiveCharity = history;
       this.setState({});
     });

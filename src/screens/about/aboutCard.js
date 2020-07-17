@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import Fonts from "../fonts.js";
 
 export default AboutCard = ({ title, body }) => {

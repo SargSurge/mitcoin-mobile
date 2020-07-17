@@ -4,7 +4,6 @@ import * as Permissions from "expo-permissions";
 import React, { useState, useEffect, useContext } from "react";
 import { Text, View, Platform, Button } from "react-native";
 import { WEB_URL } from "../config.js";
-import { UserContext } from "../UserContext.js";
 import * as SecureStore from "expo-secure-store";
 
 export default function NotificationTest() {
@@ -88,7 +87,6 @@ async function registerForPushNotificationsAsync(kerberos) {
   //     return tokenJSON.notificationToken;
   //   }
 
-  console.log("we in function");
   let token;
   if (Constants.isDevice) {
     const { status: existingStatus } = await Permissions.getAsync(
@@ -101,7 +99,6 @@ async function registerForPushNotificationsAsync(kerberos) {
       finalStatus = status;
       if (status === "granted") {
         token = (await Notifications.getExpoPushTokenAsync()).data;
-        console.log("after asking for permission");
         request_and_set_new_expo_token(token, kerberos);
         return;
       }
@@ -112,7 +109,6 @@ async function registerForPushNotificationsAsync(kerberos) {
     }
     let tokenCheck = await SecureStore.getItemAsync("notificationToken");
     if (tokenCheck !== null) {
-      console.log("found token " + tokenCheck);
       if (Platform.OS === "android") {
         Notifications.setNotificationChannelAsync("default", {
           name: "default",
@@ -122,13 +118,11 @@ async function registerForPushNotificationsAsync(kerberos) {
         });
       }
       //   tokenCheck = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log("after getting from secure store");
-      console.log("this is token check " + tokenCheck);
+
       //   request_and_set_new_expo_token(tokenCheck, kerberos);
       return tokenCheck;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log("notification token is" + token);
   } else {
     alert("Must use physical device for Push Notifications");
   }
@@ -146,13 +140,11 @@ async function registerForPushNotificationsAsync(kerberos) {
 }
 
 async function request_and_set_new_expo_token(token, kerberos) {
-  console.log("this is token function is receiving " + token);
   let body = JSON.stringify({
     notificationToken: token,
     // kerberos: contextObject.user.kerberos,
     kerberos: kerberos,
   });
-  console.log("Notifications--" + "body being sent: " + body);
 
   const authToken = await SecureStore.getItemAsync("refreshToken");
 
@@ -162,7 +154,6 @@ async function request_and_set_new_expo_token(token, kerberos) {
     body: body,
   });
 
-  console.log("done fetching");
   //   console.log("this is weird response" + JSON.stringify(response));
   let responseJSON = await response.json();
 

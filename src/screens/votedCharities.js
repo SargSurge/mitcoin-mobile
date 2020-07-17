@@ -96,14 +96,14 @@ export default class VotedCharities extends React.Component {
     let body = JSON.stringify({
       charities: this.props.charities,
     });
-    console.log("these are charities", this.props.charities);
+
     let response = await fetch(WEB_URL + "api/get_charity_links", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: body,
     });
     let responseJSON = await response.json();
-    console.log("this is response", responseJSON);
+
     this.setState({ charities_with_links: responseJSON });
   };
 
@@ -136,7 +136,6 @@ export default class VotedCharities extends React.Component {
     ));
 
     intro_text = () => {
-      console.log("this is length " + charityViews.length);
       switch (this.state.charities_with_links) {
         case 0:
           return null;

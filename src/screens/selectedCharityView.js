@@ -12,14 +12,13 @@ export default class SelectedCharityView extends React.Component {
     let body = JSON.stringify({
       charities: [this.props.selected_charity],
     });
-    console.log("these are charities", this.props.selected_charity);
     let response = await fetch(WEB_URL + "api/get_charity_links", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: body,
     });
     let responseJSON = await response.json();
-    console.log("this is response", responseJSON);
+
     this.setState({
       charity_name: responseJSON[0].charity,
       charity_link: responseJSON[0].link,
@@ -140,7 +139,6 @@ export default class SelectedCharityView extends React.Component {
     </View>
   );
   render() {
-    console.log("i am invoked");
     return (
       <View
         style={{

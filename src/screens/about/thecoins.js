@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Content, Card, CardItem, H2, Body, Text } from "native-base";
+import { Text } from "native-base";
 import AboutCard from "./aboutCard.js";
 import Background from "../imageBackground.js";
 
