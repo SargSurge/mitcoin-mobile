@@ -12,6 +12,7 @@ import {
   Spinner,
   Label,
   Text,
+  Fab,
 } from "native-base";
 import {
   ScrollView,
@@ -41,10 +42,11 @@ import * as SecureStore from "expo-secure-store";
 import { registerForPushNotificationsAsync } from "./notifications.js";
 import io from "socket.io-client";
 
-const DismissKeyboard = ({ children }) => (
+const DismissKeyboard = ({ children, dismissList }) => (
   <TouchableWithoutFeedback
     onPress={() => {
       Keyboard.dismiss();
+      dismissList();
       console.log("dismiss pressed");
     }}
     styles={{
@@ -112,6 +114,10 @@ export default class Send extends React.Component {
     displayName: "",
     modalVisible: true,
     sendingToName: "",
+  };
+
+  dismissList = () => {
+    this.setState({ showDropdown: false });
   };
 
   modal_function = () => {
@@ -252,6 +258,22 @@ export default class Send extends React.Component {
     });
   };
 
+  test_kerb = (kerb) => {
+    console.log("this is users " + JSON.stringify(this.state.searchResults));
+
+    console.log("this is kerb " + kerb);
+    let i;
+    for (i = 0; i < this.state.searchResults.length; i++) {
+      let user = this.state.searchResults[i];
+      if (user.kerb === kerb) {
+        console.log("we in true");
+        return true;
+      }
+    }
+
+    console.log("we in false");
+    return false;
+  };
   init_socket = async () => {
     const socket = io(WEB_URL);
     socket.on("connect", async () => {
@@ -292,7 +314,7 @@ export default class Send extends React.Component {
       body: body,
     });
     let responseJSON = await response.json();
-    console.log("this is a new transaction", responseJSON);
+    // console.log("this is a new transaction", responseJSON);
     this.context.updateUser(responseJSON);
     await actions.setSubmitting(false);
     await actions.resetForm();
@@ -303,13 +325,13 @@ export default class Send extends React.Component {
     receiverKerberos: yup
       .string()
       .required("Required!")
-      .test(
-        "validkerbmatch",
-        "Cannot send to self",
-        (value) => value !== this.context.user.kerberos
+
+      .test("validreceiver", "Kerberos entered is invalid", (value) =>
+        this.test_kerb(value)
       ),
     amount: yup
       .number()
+      .typeError("Amount must be a number")
       .min(1, "Invalid Amount!")
       .max(parseInt(this.context.user.giveBalance), "Invalid Amount!")
       .required("Required!"),
@@ -328,8 +350,8 @@ export default class Send extends React.Component {
     let border = (
       <View
         style={{
-          borderTopColor: "#982B39",
-          borderTopWidth: 0.5,
+          borderTopColor: "red",
+          borderTopWidth: 1,
           width: "100%",
         }}
       ></View>
@@ -344,9 +366,8 @@ export default class Send extends React.Component {
     );
 
     return (
-      <DismissKeyboard>
-        {/* <ScrollView> */}
-        <Container>
+      <View>
+        <View>
           <Toast
             ref="toast"
             style={{
@@ -372,270 +393,277 @@ export default class Send extends React.Component {
           <Background />
           <Header navigation={this.props.navigation} title={"Send Coins"} />
 
-          <ScrollView style={{ paddingBottom: 1000, marginTop: 80 }}>
-            <View
-              style={{
-                alignItems: "center",
-                alignSelf: "stretch",
-              }}
-            >
-              <Text
-                style={{
-                  color: "#982B39",
-                  paddingBottom: 4,
-                  marginBottom: 8,
-                  paddingTop: 4,
-                  fontWeight: "500",
-                  ...Fonts.header,
-                  fontSize: 26,
-                }}
-              >
-                {" "}
-                Welcome {user.fullName.split(" ")[0]}!
-              </Text>
+          <ScrollView
 
-              {border}
-              <View
-                style={{
-                  width: "100%",
-                  marginTop: 24,
-                  marginBottom: 24,
-                  marginLeft: 16,
-                }}
-              >
-                <CoinDetails
-                  text="Coins you can give"
-                  value={`${user.giveBalance} MITCoins`}
-                />
+          // bounces={false}
+          // showsVerticalScrollIndicator={false}
+          // alwaysBounceVertical={false}
+          // alwaysBounceHorizontal={false}
+          >
+            <DismissKeyboard dismissList={this.dismissList}>
+              <View style={{ marginLeft: 8, marginRight: 8 }}>
+                <View
+                  style={{
+                    alignItems: "center",
+                    alignSelf: "stretch",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#982B39",
+                      paddingBottom: 16,
 
-                <CoinDetails
-                  text="Coins you've received"
-                  value={`${user.receiveBalance} MITCoins`}
-                />
-              </View>
-            </View>
-            {border}
+                      paddingTop: 20,
+                      fontWeight: "500",
+                      ...Fonts.header,
+                      fontSize: 26,
+                    }}
+                  >
+                    {" "}
+                    Welcome {user.fullName.split(" ")[0]}!
+                  </Text>
 
-            <Text
-              style={{
-                fontSize: 28,
-                padding: 16,
+                  {border}
+                  <View
+                    style={{
+                      width: "100%",
+                      marginTop: 12,
+                      marginBottom: 12,
+                      marginLeft: 8,
+                    }}
+                  >
+                    <CoinDetails
+                      text="Coins you can give"
+                      value={`${user.giveBalance} MITCoins`}
+                    />
 
-                textAlign: "center",
-                ...Fonts.header,
-              }}
-            >
-              {custom_hash}
-              Send Coins
-              {custom_hash}
-            </Text>
-            <Formik
-              initialValues={{
-                receiverKerberos: "",
-                amount: "",
-                comment: "",
-              }}
-              onSubmit={this.handlePress}
-              validationSchema={this.validationSchema}
-            >
-              {(formikProps) => (
-                <Form>
-                  <View>
-                    <Item
-                      style={{
-                        alignSelf: "stretch",
-                        borderColor: "red",
-                        borderTopWidth: 1,
-                        borderBottomWidth: 1,
-                        alignItems: "center",
-                        paddingBottom: 20,
-                      }}
-                      stackedLabel
-                    >
-                      <Label style={{ color: "red" }}>
-                        {formikProps.errors.receiverKerberos &&
-                        formikProps.touched.receiverKerberos
-                          ? formikProps.errors.receiverKerberos
-                          : null}
-                      </Label>
-                      <Input
-                        returnKeyType="done"
-                        blurOnSubmit={true}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        value={formikProps.values.receiverKerberos}
-                        placeholder="Search for receiver by name or kerberos ID"
-                        onChangeText={(text) => {
-                          // formikProps.values.receiverKerberos = text;
-                          if (text.length > 2) {
-                            this.fetch_data(text);
-                          } else {
-                            this.setState({ showDropdown: false });
-                          }
-                          let func = formikProps.handleChange(
-                            "receiverKerberos"
-                          );
-                          func(text);
-                        }}
-                      />
-                    </Item>
-                    {this.state.showDropdown ? (
-                      // <Item style={{ width: "100%" }}>
-                      <View style={{ width: "100%", height: "100%" }}>
-                        <Text
+                    <CoinDetails
+                      text="Coins you've received"
+                      value={`${user.receiveBalance} MITCoins`}
+                    />
+                  </View>
+                </View>
+                {border}
+
+                <Text
+                  style={{
+                    fontSize: 28,
+                    padding: 16,
+
+                    textAlign: "center",
+                    ...Fonts.header,
+                  }}
+                >
+                  {custom_hash}
+                  Send Coins
+                  {custom_hash}
+                </Text>
+                <Formik
+                  initialValues={{
+                    receiverKerberos: "",
+                    amount: "",
+                    comment: "",
+                  }}
+                  onSubmit={this.handlePress}
+                  validationSchema={this.validationSchema}
+                >
+                  {(formikProps) => (
+                    <Form>
+                      <View>
+                        <Item
                           style={{
-                            paddingTop: 8,
-                            height: 32,
-                            opacity: 1,
-                            alignSelf: "center",
-                            color: "#982B39",
-                            textAlign: "center",
-                            fontWeight: "800",
+                            alignSelf: "stretch",
+                            borderColor: "red",
+                            borderTopWidth: 1,
+                            borderBottomWidth: 1,
+                            alignItems: "center",
+                            paddingBottom: 4,
+                            paddingTop: 4,
                           }}
                         >
-                          {this.state.searchResults.length > 0
-                            ? "Double tap to select user"
-                            : "No results to show"}
-                        </Text>
-                        {/* <ScrollView style={{ padding: 10 }}> */}
-                        <FlatList
+                          <Label style={{ color: "red" }}>
+                            {formikProps.errors.receiverKerberos &&
+                            formikProps.touched.receiverKerberos
+                              ? formikProps.errors.receiverKerberos
+                              : null}
+                          </Label>
+                          <Input
+                            returnKeyType="done"
+                            blurOnSubmit={true}
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            value={formikProps.values.receiverKerberos}
+                            placeholder="Search for receiver by name or kerberos ID"
+                            onChangeText={(text) => {
+                              // formikProps.values.receiverKerberos = text;
+                              if (text.length > 2) {
+                                this.fetch_data(text);
+                              } else {
+                                this.setState({ showDropdown: false });
+                              }
+                              let func = formikProps.handleChange(
+                                "receiverKerberos"
+                              );
+                              func(text);
+                            }}
+                          />
+                        </Item>
+                        {this.state.showDropdown ? (
+                          // <Item style={{ width: "100%" }}>
+                          <View style={{ width: "100%", height: "100%" }}>
+                            <Text
+                              style={{
+                                paddingTop: 8,
+                                height: 32,
+                                opacity: 1,
+                                alignSelf: "center",
+                                color: "#982B39",
+                                textAlign: "center",
+                                fontWeight: "800",
+                              }}
+                            >
+                              {this.state.searchResults.length > 0
+                                ? "Double tap to select user"
+                                : "No results to show"}
+                            </Text>
+                            {/* <ScrollView style={{ padding: 10 }}> */}
+                            <FlatList
+                              style={{
+                                backgroundColor: "#FFF3F3",
+                                borderWidth: 1,
+                                borderColor: "black",
+                                borderRadius: 8,
+                                height: 450,
+                                padding: 10,
+                              }}
+                              data={this.state.searchResults}
+                              keyExtractor={(item, index) => index.toString()}
+                              renderItem={({ item }) => {
+                                return (
+                                  <TouchableOpacity
+                                    style={{
+                                      marginTop: 1,
+                                      marginBottom: 1,
+                                      borderTopWidth: 0.5,
+                                      borderColor: "black",
+                                      borderBottomWidth: 0.5,
+                                      height: 80,
+                                      paddingLeft: 8,
+                                      paddingRight: 8,
+                                    }}
+                                    onPress={() => {
+                                      formikProps.values.receiverKerberos =
+                                        item.kerb;
+
+                                      //this is to reload the input value withoout making another network request
+                                      this.setState({
+                                        rerender: false,
+                                        showDropdown: false,
+                                        sendingToName: item.name,
+                                      });
+                                    }}
+                                  >
+                                    <View
+                                      scrollEnabled={false}
+                                      style={{
+                                        flex: 1,
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                      }}
+                                    >
+                                      <Text>{item.name}</Text>
+                                      <Text style={{ fontWeight: "bold" }}>
+                                        {item.kerb}
+                                      </Text>
+                                    </View>
+                                  </TouchableOpacity>
+                                );
+                              }}
+                            />
+                            {/* </ScrollView> */}
+                          </View>
+                        ) : // </Item>
+                        null}
+
+                        <Item
+                          // stackedLabel
                           style={{
-                            backgroundColor: "#FFF3F3",
-                            borderWidth: 1,
-                            borderColor: "black",
-                            borderRadius: 8,
-                            height: 450,
-                            padding: 10,
+                            // alignSelf: "stretch",
+                            borderColor: "red",
+                            borderTopWidth: 1,
+                            borderBottomWidth: 1,
+                            alignItems: "center",
+                            paddingBottom: 8,
+                            marginTop: 1,
                           }}
-                          data={this.state.searchResults}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => {
-                            return (
-                              <TouchableOpacity
-                                style={{
-                                  marginTop: 1,
-                                  marginBottom: 1,
-                                  borderTopWidth: 0.5,
-                                  borderColor: "black",
-                                  borderBottomWidth: 0.5,
-                                  height: 80,
-                                  paddingLeft: 8,
-                                  paddingRight: 8,
-                                }}
-                                onPress={() => {
-                                  formikProps.values.receiverKerberos =
-                                    item.kerb;
+                        >
+                          <Label style={{ color: "red" }}>
+                            {formikProps.errors.amount &&
+                            formikProps.touched.amount
+                              ? formikProps.errors.amount
+                              : null}
+                          </Label>
+                          <Input
+                            value={formikProps.values.amount}
+                            placeholder="Amount"
+                            onChangeText={formikProps.handleChange("amount")}
+                            returnKeyType="done"
+                            blurOnSubmit={true}
+                          />
+                        </Item>
 
-                                  //this is to reload the input value withoout making another network request
-                                  this.setState({
-                                    rerender: false,
-                                    showDropdown: false,
-                                    sendingToName: item.name,
-                                  });
-                                }}
-                              >
-                                <View
-                                  scrollEnabled={false}
-                                  style={{
-                                    flex: 1,
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                  }}
-                                >
-                                  <Text>{item.name}</Text>
-                                  <Text style={{ fontWeight: "bold" }}>
-                                    {item.kerb}
-                                  </Text>
-                                </View>
-                              </TouchableOpacity>
-                            );
+                        <Item
+                          style={{
+                            borderColor: "red",
+                            borderTopWidth: 1,
+                            borderBottomWidth: 1,
+
+                            // paddingBottom: 20,
+                            paddingTop: 8,
+                            marginBottom: 8,
+                            marginTop: 1,
                           }}
-                        />
-                        {/* </ScrollView> */}
+                          stackedLabel
+                        >
+                          <Input
+                            value={formikProps.values.comment}
+                            placeholder="Reason Why (Optional)"
+                            multiline={true}
+                            numberOfLines={3}
+                            onChangeText={formikProps.handleChange("comment")}
+                            returnKeyType="done"
+                            blurOnSubmit={true}
+                          />
+                        </Item>
                       </View>
-                    ) : // </Item>
-                    null}
 
-                    <Item
-                      stackedLabel
-                      style={{
-                        alignSelf: "stretch",
-                        borderColor: "red",
-                        borderTopWidth: 1,
-                        borderBottomWidth: 1,
-                        alignItems: "center",
-                        paddingBottom: 16,
-                        marginTop: 1,
-                      }}
-                    >
-                      <Label style={{ color: "red" }}>
-                        {formikProps.errors.amount && formikProps.touched.amount
-                          ? formikProps.errors.amount
-                          : null}
-                      </Label>
-                      <Input
-                        value={formikProps.values.amount}
-                        placeholder="Amount"
-                        onChangeText={formikProps.handleChange("amount")}
-                        returnKeyType="done"
-                        blurOnSubmit={true}
-                      />
-                    </Item>
-
-                    <Item
-                      style={{
-                        borderColor: "red",
-                        borderTopWidth: 1,
-                        borderBottomWidth: 1,
-
-                        // paddingBottom: 20,
-                        paddingTop: 8,
-                        marginBottom: 8,
-                        marginTop: 1,
-                      }}
-                      stackedLabel
-                    >
-                      <Input
-                        value={formikProps.values.comment}
-                        placeholder="Reason Why (Optional)"
-                        multiline={true}
-                        numberOfLines={3}
-                        onChangeText={formikProps.handleChange("comment")}
-                        returnKeyType="done"
-                        blurOnSubmit={true}
-                      />
-                    </Item>
-                  </View>
-                  {formikProps.isSubmitting ? null : ( // <Spinner />
-                    <Button
-                      block
-                      danger
-                      onPress={() => {
-                        showToast();
-                        formikProps.handleSubmit();
-                        //
-                      }}
-                      style={{
-                        backgroundColor: "#982B39",
-                        // marginBottom: 700,
-                      }}
-                    >
-                      <Text style={{ fontWeight: "600" }}>Submit</Text>
-                    </Button>
+                      <Button
+                        block
+                        danger
+                        onPress={() => {
+                          // showToast();
+                          formikProps.handleSubmit();
+                          // console.log("if fails, what?", res);
+                          //
+                        }}
+                        style={{
+                          backgroundColor: "#982B39",
+                          marginBottom: 600,
+                        }}
+                      >
+                        <Text style={{ fontWeight: "600" }}>Submit</Text>
+                      </Button>
+                    </Form>
                   )}
-                </Form>
-              )}
-            </Formik>
-
-            {/* </ScrollView> */}
+                </Formik>
+              </View>
+            </DismissKeyboard>
           </ScrollView>
           {this.modal_function()}
-        </Container>
-
-        {/* </ScrollView> */}
-      </DismissKeyboard>
+        </View>
+      </View>
     );
   }
 }
