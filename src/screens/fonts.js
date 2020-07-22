@@ -7,7 +7,7 @@ const Fonts = StyleSheet.create({
         fontFamily: "Georgia",
       },
       android: {
-        fontFamily: "notoserif",
+        fontFamily: "Roboto",
       },
     }),
   },
@@ -18,7 +18,7 @@ const Fonts = StyleSheet.create({
         fontFamily: "AvenirNextCondensed-Medium",
       },
       android: {
-        fontFamily: "monospace",
+        fontFamily: "Notoserif",
       },
     }),
   },

@@ -9,6 +9,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -365,6 +366,12 @@ export default class Send extends React.Component {
             }}
             position="top"
           />
+          {/* <StatusBar
+            barStyle="dark-content"
+            hidden={false}
+            backgroundColor="#00BCD4"
+            translucent={true}
+          /> */}
           <Background />
           <Header navigation={this.props.navigation} title={"Send Coins"} />
 
