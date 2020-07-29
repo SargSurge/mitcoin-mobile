@@ -76,5 +76,15 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 5,
   },
-  email: { fontWeight: "600", paddingTop: 8 },
+  email: {
+    fontWeight: "600",
+    paddingTop: 8,
+
+    ...Platform.select({
+      android: {
+        fontWeight: "bold",
+        color: "#3B4049",
+      },
+    }),
+  },
 });

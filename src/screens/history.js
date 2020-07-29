@@ -21,14 +21,26 @@ export default class History extends React.Component {
       <Container>
         <Background />
         <Header navigation={this.props.navigation} title={"History"} />
-        <Tabs>
-          <Tab heading="Send History">
+        <Tabs tabBarUnderlineStyle={{ backgroundColor: "#3177F0" }}>
+          <Tab
+            activeTextStyle={{ color: "#3177F0" }}
+            textStyle={{ color: "#919191" }}
+            tabStyle={{ backgroundColor: "#F8F8F8" }}
+            activeTabStyle={{ backgroundColor: "#F8F8F8" }}
+            heading="Send History"
+          >
             <HistoryList
               actualHistory={user.sendHistory}
               contextText="sendHistory"
             />
           </Tab>
-          <Tab heading="Receive History">
+          <Tab
+            heading="Receive History"
+            activeTextStyle={{ color: "#3177F0" }}
+            tabStyle={{ backgroundColor: "#F8F8F8" }}
+            activeTabStyle={{ backgroundColor: "#F8F8F8" }}
+            textStyle={{ color: "#919191" }}
+          >
             <HistoryList
               actualHistory={user.receiveHistory}
               contextText="receiveHistory"

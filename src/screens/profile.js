@@ -72,8 +72,19 @@ export default class Profile extends React.Component {
       <Text
         style={{
           ...Fonts.regular_text,
-          fontWeight: "500",
-          fontSize: 18,
+          ...Platform.select({
+            ios: {
+              // fontFamily: "Georgia",
+              fontWeight: "500",
+              fontSize: 18,
+            },
+            android: {
+              fontFamily: "sans-serif",
+              fontWeight: "bold",
+              fontSize: 16,
+            },
+          }),
+
           color: "#982B39",
         }}
       >

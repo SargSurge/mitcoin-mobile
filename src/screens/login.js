@@ -47,7 +47,10 @@ export default class Login extends React.Component {
     let responseJSON = await response.json();
 
     if (responseJSON) {
+      // console.log("response again", JSON.stringify(responseJSON.access_token));
       await SecureStore.setItemAsync("accessToken", responseJSON.access_token);
+      // console.log("this is type if refresh token");
+      // console.log(typeof responseJSON.refresh_token);
       await SecureStore.setItemAsync(
         "refreshToken",
         responseJSON.refresh_token

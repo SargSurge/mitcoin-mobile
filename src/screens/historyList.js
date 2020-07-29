@@ -10,11 +10,29 @@ SingleField = ({ text, value }) => (
     style={{ flexDirection: "row", justifyContent: "space-between", flex: 1 }}
   >
     <Text
-      style={{ flex: 1.5, ...Fonts.header, fontWeight: "600", fontSize: 15 }}
+      style={{
+        ...Platform.select({
+          ios: {
+            fontWeight: "600",
+            fontSize: 15,
+
+            ...Fonts.header,
+            flex: 1.5,
+          },
+          android: {
+            fontSize: 15,
+            fontWeight: "bold",
+            color: "#3B4049",
+            flex: 1.6,
+          },
+        }),
+      }}
     >
       {text}:{" "}
     </Text>
-    <Text style={{ ...Fonts.regular_text, flex: 3.5, fontSize: 15 }}>
+    <Text
+      style={{ ...Fonts.regular_text, flex: 3.5, fontSize: 15, paddingLeft: 2 }}
+    >
       {value}
     </Text>
   </View>
@@ -106,12 +124,12 @@ export default HistoryList = ({ actualHistory, contextText }) => (
 
 let styles = StyleSheet.create({
   card: {
-    margin: 10,
+    margin: 8,
     backgroundColor: "white",
     borderRadius: 10,
     borderColor: "#9CD6B0",
     borderWidth: 1,
-    padding: 35,
+    padding: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

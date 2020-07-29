@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "158584799091",
+    "firebase_url": "https://mitcoin-87b67.firebaseio.com",
+    "project_id": "mitcoin-87b67",
+    "storage_bucket": "mitcoin-87b67.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158584799091:android:112819e6c63034f7274f06",
+        "android_client_info": {
+          "package_name": "com.mhh.mitcoin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158584799091-psue6v72ct7et4pvmvkju0o1f49rncbk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLSCwAxfsUS6e97nAnYHkb2TlckWxQcPk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158584799091-psue6v72ct7et4pvmvkju0o1f49rncbk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

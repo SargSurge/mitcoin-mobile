@@ -23,6 +23,8 @@
     "android": {
       "package": "com.mhh.mitcoin",
       "permissions": [],
+      "useNextNotificationsApi": true,
+      "googleServicesFile": "./google-services.json",
       "versionCode": 4
     },
     "scheme": "myapp",

@@ -21,6 +21,9 @@ export default class CheckToken extends React.Component {
   componentDidMount = async () => {
     // Check if there is a token stored to skip logging in
     const token = await SecureStore.getItemAsync("refreshToken");
+    // console.log("token from secure store", token);
+    // console.log("this is type of secure store token");
+    // console.log(typeof token);
     if (!token) {
       this.props.navigation.navigate("Login");
       return;

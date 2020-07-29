@@ -48,7 +48,24 @@ const CoinDetails = ({ text, value }) => (
       marginTop: 4,
     }}
   >
-    <Text style={{ flex: 3, ...Fonts.header, fontWeight: "600", fontSize: 18 }}>
+    <Text
+      style={{
+        ...Platform.select({
+          ios: {
+            flex: 3,
+            fontWeight: "600",
+            fontSize: 18,
+          },
+          android: {
+            flex: 3.5,
+            fontSize: 17,
+            fontWeight: "bold",
+            color: "#3B4049",
+          },
+        }),
+        ...Fonts.header,
+      }}
+    >
       {text}:{" "}
     </Text>
     <Text style={{ ...Fonts.regular_text, flex: 4, fontSize: 16 }}>
@@ -366,22 +383,11 @@ export default class Send extends React.Component {
             }}
             position="top"
           />
-          {/* <StatusBar
-            barStyle="dark-content"
-            hidden={false}
-            backgroundColor="#00BCD4"
-            translucent={true}
-          /> */}
+
           <Background />
           <Header navigation={this.props.navigation} title={"Send Coins"} />
 
-          <ScrollView
-
-          // bounces={false}
-          // showsVerticalScrollIndicator={false}
-          // alwaysBounceVertical={false}
-          // alwaysBounceHorizontal={false}
-          >
+          <ScrollView nestedScrollEnabled={true}>
             <DismissKeyboard dismissList={this.dismissList}>
               <View style={{ marginLeft: 8, marginRight: 8 }}>
                 <View
@@ -477,7 +483,6 @@ export default class Send extends React.Component {
                             value={formikProps.values.receiverKerberos}
                             placeholder="Search for receiver by name or kerberos ID"
                             onChangeText={(text) => {
-                              // formikProps.values.receiverKerberos = text;
                               if (text.length > 2) {
                                 this.fetch_data(text);
                               } else {
@@ -491,7 +496,6 @@ export default class Send extends React.Component {
                           />
                         </Item>
                         {this.state.showDropdown ? (
-                          // <Item style={{ width: "100%" }}>
                           <View style={{ width: "100%", height: "100%" }}>
                             <Text
                               style={{
@@ -508,7 +512,7 @@ export default class Send extends React.Component {
                                 ? "Double tap to select user"
                                 : "No results to show"}
                             </Text>
-                            {/* <ScrollView style={{ padding: 10 }}> */}
+
                             <FlatList
                               style={{
                                 backgroundColor: "#FFF3F3",
@@ -518,6 +522,7 @@ export default class Send extends React.Component {
                                 height: 450,
                                 padding: 10,
                               }}
+                              nestedScrollEnabled={true}
                               data={this.state.searchResults}
                               keyExtractor={(item, index) => index.toString()}
                               renderItem={({ item }) => {
@@ -564,15 +569,12 @@ export default class Send extends React.Component {
                                 );
                               }}
                             />
-                            {/* </ScrollView> */}
                           </View>
-                        ) : // </Item>
-                        null}
+                        ) : null}
 
                         <Item
                           // stackedLabel
                           style={{
-                            // alignSelf: "stretch",
                             borderColor: "red",
                             borderTopWidth: 1,
                             borderBottomWidth: 1,
@@ -602,7 +604,6 @@ export default class Send extends React.Component {
                             borderTopWidth: 1,
                             borderBottomWidth: 1,
 
-                            // paddingBottom: 20,
                             paddingTop: 8,
                             marginBottom: 8,
                             marginTop: 1,
@@ -625,7 +626,6 @@ export default class Send extends React.Component {
                         block
                         danger
                         onPress={() => {
-                          // showToast();
                           formikProps.handleSubmit();
                         }}
                         style={{
