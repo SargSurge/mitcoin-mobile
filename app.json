@@ -17,15 +17,15 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "com.mhh.mitcoin",
-      "buildNumber": "1.0.0"
+      "bundleIdentifier": "edu.mit.mitcoin",
+      "buildNumber": "2.0.0"
     },
     "android": {
       "package": "com.mhh.mitcoin",
       "permissions": [],
       "useNextNotificationsApi": true,
       "googleServicesFile": "./google-services.json",
-      "versionCode": 4
+      "versionCode": 5
     },
     "scheme": "myapp",
     "entryPoint": "node_modules/expo/AppEntry.js"

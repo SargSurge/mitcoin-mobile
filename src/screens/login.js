@@ -48,12 +48,15 @@ export default class Login extends React.Component {
 
     if (responseJSON) {
       // console.log("response again", JSON.stringify(responseJSON.access_token));
-      await SecureStore.setItemAsync("accessToken", responseJSON.access_token);
+      await SecureStore.setItemAsync(
+        "accessToken",
+        JSON.stringify(responseJSON.access_token)
+      );
       // console.log("this is type if refresh token");
       // console.log(typeof responseJSON.refresh_token);
       await SecureStore.setItemAsync(
         "refreshToken",
-        responseJSON.refresh_token
+        JSON.stringify(responseJSON.refresh_token)
       );
       await this.context.updateUser(responseJSON.user);
       await this.context.updateVotingStatus(responseJSON.is_voting_closed);
@@ -90,5 +93,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     margin: 14,
     height: 50,
+    backgroundColor: "#982B39",
   },
 });

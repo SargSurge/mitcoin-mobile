@@ -178,6 +178,7 @@ export default class Profile extends React.Component {
               elevation: 2,
               marginTop: 30,
               marginBottom: 60,
+              backgroundColor: "#ffffff",
             }}
           >
             <Text

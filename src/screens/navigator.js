@@ -9,7 +9,7 @@ import HistoryScreen from "./history.js";
 import CheckTokenScreen from "./checktoken.js";
 import AboutScreen from "./about.js";
 import ProfileScreen from "./profile.js";
-import NotificationScreen from "./notifications.js";
+// import NotificationScreen from "./notifications.js";
 import { DrawerItems } from "react-navigation-drawer";
 import React from "react";
 import { ScrollView, SafeAreaView, Image } from "react-native";
@@ -43,7 +43,7 @@ const AppDrawer = createDrawerNavigator(
     Profile: ProfileScreen,
     History: HistoryScreen,
     "About MITCoin": AboutScreen,
-    Notifications: NotificationScreen,
+    // Notifications: NotificationScreen,
   },
   { overlayColor: "#00000055", contentComponent: CustomDrawerContentComponent }
   // { drawerStyle: { width: "100%" } }

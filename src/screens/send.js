@@ -132,17 +132,17 @@ export default class Send extends React.Component {
     }
   };
   modal = () => {
-    intro_text = this.context.voting_closed
+    let intro_text = this.context.voting_closed
       ? "Select a charity!"
       : "Vote for a charity!";
-    explanation_text = this.context.voting_closed
+    let explanation_text = this.context.voting_closed
       ? `Hello ${
           this.context.user.fullName.split(" ")[0]
         }! Voting is closed and the top 3 charities have been selected. Please click the button below to select one of the three charities to which an equivalent dollar amount of all your received coins will be donated to.`
       : `Hello ${
           this.context.user.fullName.split(" ")[0]
         }! You have not yet voted for a charity. Please click on the button below to vote for a charity (or charities) of your choice on our website.`;
-    button_text = this.context.voting_closed
+    let button_text = this.context.voting_closed
       ? "Select a charity"
       : "Vote for charities";
 
@@ -201,7 +201,10 @@ export default class Send extends React.Component {
                   style={{
                     borderRadius: 20,
                     padding: 10,
+                    borderColor: "red",
+                    borderWidth: 1,
                     elevation: 2,
+                    backgroundColor: "#ffffff",
                   }}
                   onPress={() => {
                     this.setState({ modalVisible: false });
@@ -343,7 +346,7 @@ export default class Send extends React.Component {
     let border = (
       <View
         style={{
-          borderTopColor: "red",
+          borderTopColor: "#8B333B",
           borderTopWidth: 1,
           width: "100%",
         }}
@@ -555,7 +558,7 @@ export default class Send extends React.Component {
                                       style={{
                                         flex: 1,
                                         alignItems: "center",
-                                        justifyContent: "center",
+
                                         flexDirection: "row",
                                         justifyContent: "space-between",
                                       }}
@@ -641,7 +644,8 @@ export default class Send extends React.Component {
               </View>
             </DismissKeyboard>
           </ScrollView>
-          {this.modal_function()}
+          {/* {this.modal_function()} */}
+          {this.modal()}
         </View>
       </View>
     );
