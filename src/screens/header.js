@@ -1,6 +1,7 @@
 import React from "react";
 import { Header, Body, Title, Right } from "native-base";
 import Bar from "./bar.js";
+import { Ionicons } from "@expo/vector-icons";
 
 export default HeaderFunction = ({ navigation, title }) => {
   return (

@@ -25,6 +25,7 @@ import Fonts from "./fonts.js";
 import * as SecureStore from "expo-secure-store";
 import { registerForPushNotificationsAsync } from "./notifications.js";
 import io from "socket.io-client";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 const DismissKeyboard = ({ children, dismissList }) => (
   <TouchableWithoutFeedback
@@ -389,7 +390,7 @@ export default class Send extends React.Component {
 
           <Background />
           <Header navigation={this.props.navigation} title={"Send Coins"} />
-
+          <FontAwesome5 name="arrow-right" size={64} color="black" />
           <ScrollView nestedScrollEnabled={true}>
             <DismissKeyboard dismissList={this.dismissList}>
               <View style={{ marginLeft: 8, marginRight: 8 }}>

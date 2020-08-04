@@ -37,6 +37,7 @@ export default class CheckToken extends React.Component {
       };
       let response = await fetch(WEB_URL + "auth/verify", options);
       let responseJSON = await response.json();
+      console.log("this is response: ", responseJSON);
       if (responseJSON.active) {
         await this.context.updateUser(responseJSON.user);
         await this.context.updateVotingStatus(responseJSON.is_voting_closed);
