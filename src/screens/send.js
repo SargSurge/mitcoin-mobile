@@ -244,7 +244,10 @@ export default class Send extends React.Component {
 
   fetch_data = async (kerb_or_name) => {
     //Too little data to search through
+
     const token = await SecureStore.getItemAsync("refreshToken");
+
+    console.log("what token is being sent", token);
 
     let response = await fetch(
       `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`,
