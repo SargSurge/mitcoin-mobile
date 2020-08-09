@@ -35,6 +35,7 @@ export default class Login extends React.Component {
 
   handlePress = async () => {
     let redirectURL = AuthSession.getRedirectUrl();
+    console.log("this is redirect uri", redirectURL);
     let result = await AuthSession.startAsync({
       authUrl:
         authurlstart +
@@ -43,6 +44,8 @@ export default class Login extends React.Component {
         CLIENT_ID,
     });
     let code = result.params.code;
+    console.log("this is code", code);
+
     let response = await fetch(WEB_URL + "auth/get_token?code=" + code);
     let responseJSON = await response.json();
 

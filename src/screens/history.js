@@ -8,12 +8,7 @@ import Background from "./imageBackground.js";
 export default class History extends React.Component {
   static contextType = UserContext;
 
-  componentDidMount() {
-    this.context.socket_object.on("receive_history", (history) => {
-      this.context.user.receiveCharity = history;
-      this.setState({});
-    });
-  }
+  componentDidMount() {}
   render() {
     const user = this.context.user;
     // const user = userSample;

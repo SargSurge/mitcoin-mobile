@@ -52,16 +52,6 @@ export default class Profile extends React.Component {
 
   componentDidMount() {
     // this.init_socket_part_2();
-    this.context.socket_object.on("charity_selected", (charity) => {
-      this.context.user.selectedCharity = charity;
-      this.setState({});
-    });
-
-    this.context.socket_object.on("charities_voted", (voted_charities) => {
-      this.context.user.votedCharities = voted_charities;
-      // this.context.updateUser(this.context.user);
-      this.setState({});
-    });
   }
 
   render() {
@@ -115,6 +105,8 @@ export default class Profile extends React.Component {
               fontWeight: "400",
               color: "#982B39",
               fontSize: 24,
+              paddingLeft: 4,
+              paddingRight: 4,
             }}
           >
             {" "}
@@ -171,30 +163,28 @@ export default class Profile extends React.Component {
           <TouchableOpacity
             onPress={() => setTimeout(this.logout, 200)}
             style={{
-              // borderRadius: 10,
-              // borderColor: "red",
-              // borderWidth: 1,
               padding: 10,
               elevation: 2,
               marginTop: 30,
               marginBottom: 60,
               backgroundColor: "#ffffff",
+
+              marginLeft: 50,
+              marginRight: 50,
+              borderColor: "#982B39",
+              borderWidth: 1,
+              borderRadius: 10,
+              padding: 10,
             }}
           >
             <Text
               style={{
+                backgroundColor: "#ffffff",
                 color: "#982B39",
                 fontWeight: "600",
                 textAlign: "center",
                 ...Fonts.regular_text,
                 fontSize: 16,
-                borderRadius: 10,
-                borderColor: "#982B39",
-                borderWidth: 1,
-                padding: 10,
-                elevation: 2,
-                marginLeft: 50,
-                marginRight: 50,
               }}
             >
               Sign out

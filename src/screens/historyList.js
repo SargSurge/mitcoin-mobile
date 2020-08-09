@@ -5,7 +5,7 @@ import moment from "moment";
 import Fonts from "./fonts.js";
 import Background from "./imageBackground.js";
 
-SingleField = ({ text, value }) => (
+let SingleField = ({ text, value }) => (
   <View
     style={{ flexDirection: "row", justifyContent: "space-between", flex: 1 }}
   >
@@ -37,7 +37,7 @@ SingleField = ({ text, value }) => (
     </Text>
   </View>
 );
-HistoryCard = ({ date, toFrom, amount, comment, contextText, name }) => {
+let HistoryCard = ({ date, toFrom, amount, comment, contextText, name }) => {
   // Change toFrom to be actual name of person
   let date_text = contextText === "sendHistory" ? "Date Sent" : "Date Received";
   let name_text = contextText === "sendHistory" ? "Receiver" : "Sender";

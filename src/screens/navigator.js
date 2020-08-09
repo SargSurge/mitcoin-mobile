@@ -42,6 +42,7 @@ const AppDrawer = createDrawerNavigator(
     Send: SendScreen,
     Profile: ProfileScreen,
     History: HistoryScreen,
+
     "About MITCoin": AboutScreen,
     // Notifications: NotificationScreen,
   },

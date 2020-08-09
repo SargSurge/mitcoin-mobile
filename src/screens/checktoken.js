@@ -20,7 +20,19 @@ export default class CheckToken extends React.Component {
   static contextType = UserContext;
   componentDidMount = async () => {
     // Check if there is a token stored to skip logging in
-    const token = await SecureStore.getItemAsync("refreshToken");
+
+    time1 = Date.now();
+    let token;
+    try {
+      token = await SecureStore.getItemAsync("refreshToken");
+    } catch (error) {
+      console.error(error);
+      console.log("Error fetching item from secure store");
+      this.props.navigation.navigate("Login");
+      return;
+    }
+    time2 = Date.now();
+    console.log("this is time for secure store", time2 - time1);
     console.log("token from secure store", token);
     // console.log("this is type of secure store token");
     // console.log(typeof token);
@@ -35,18 +47,26 @@ export default class CheckToken extends React.Component {
           Authorization: token,
         },
       };
+
+      time3 = Date.now();
       let response = await fetch(WEB_URL + "auth/verify", options);
       let responseJSON = await response.json();
-      console.log("this is response: ", responseJSON);
+      // console.log("this is response: ", responseJSON);
       if (responseJSON.active) {
-        await this.context.updateUser(responseJSON.user);
-        await this.context.updateVotingStatus(responseJSON.is_voting_closed);
+        this.context.updateUser(responseJSON.user);
+        this.context.updateVotingStatus(responseJSON.is_voting_closed);
         this.props.navigation.navigate("Send");
+        time4 = Date.now();
+        console.log("this is time for API request", time4 - time3);
         return;
       } else {
+        time4 = Date.now();
+        console.log("this is time for API request", time4 - time3);
         this.props.navigation.navigate("Login");
       }
     } catch (err) {
+      time4 = Date.now();
+      console.log("this is time for API request", time4 - time3);
       this.props.navigation.navigate("Login");
     }
   };

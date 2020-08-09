@@ -1,6 +1,8 @@
 import React from "react";
 import { Left, Button, Icon } from "native-base";
+import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Hamburger from "./hamburger";
 
 export default class Bar extends React.Component {
   render() {
@@ -11,7 +13,9 @@ export default class Bar extends React.Component {
           onPress={() => this.props.navigation.openDrawer()}
           style={{ marginLeft: 4 }}
         >
-          <Ionicons name="ios-menu" size={32} color="white" />
+          <View>
+            <Hamburger />
+          </View>
         </Button>
       </Left>
     );

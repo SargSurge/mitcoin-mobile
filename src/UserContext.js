@@ -2,15 +2,6 @@ import React, { createContext } from "react";
 
 export const UserContext = createContext();
 
-// export const UserProvider = props => {
-//     const variableTest = 'hola'
-//     return (
-//         <UserContext.Provider value={ user }>
-//             {props.children}
-//         </UserContext.Provider>
-//     );
-// };
-
 let userSample2 = {
   fullName: "Brian Ntanga",
   mitid: 6667788,

@@ -1,6 +1,8 @@
 import React from "react";
 import Toast, { DURATION } from "react-native-easy-toast";
 import { Form, Item, Input, View, H1, Button, Label, Text } from "native-base";
+import Hamburger from "./hamburger";
+
 import {
   ScrollView,
   StyleSheet,
@@ -25,7 +27,6 @@ import Fonts from "./fonts.js";
 import * as SecureStore from "expo-secure-store";
 import { registerForPushNotificationsAsync } from "./notifications.js";
 import io from "socket.io-client";
-import { FontAwesome5 } from "@expo/vector-icons";
 
 const DismissKeyboard = ({ children, dismissList }) => (
   <TouchableWithoutFeedback
@@ -338,12 +339,13 @@ export default class Send extends React.Component {
   });
 
   componentDidMount() {
-    this.init_socket();
-    setTimeout(this.init_socket_part_2, 5000);
+    // this.init_socket();
+    // setTimeout(this.init_socket_part_2, 5000);
     registerForPushNotificationsAsync(this.context.user.kerberos);
     // this.test_notifications();
   }
   render() {
+    let scrollDabs = !this.state.showDropdown;
     const user = this.context.user;
     // const user = userSample;
 
@@ -393,7 +395,7 @@ export default class Send extends React.Component {
 
           <Background />
           <Header navigation={this.props.navigation} title={"Send Coins"} />
-          <FontAwesome5 name="arrow-right" size={64} color="black" />
+
           <ScrollView nestedScrollEnabled={true}>
             <DismissKeyboard dismissList={this.dismissList}>
               <View style={{ marginLeft: 8, marginRight: 8 }}>
