@@ -147,8 +147,13 @@ export default class Profile extends React.Component {
           </Text>
 
           {this.context.voting_closed ? (
-            <SelectedCharityView
-              selected_charity={user.selectedCharity}
+            //   <SelectedCharityView
+            //     selected_charity={user.selectedCharity}
+            //     mitid={user.mitid}
+            //   />
+            // )
+            <VotedCharities
+              charities={user.votedCharities}
               mitid={user.mitid}
             />
           ) : (

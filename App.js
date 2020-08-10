@@ -69,7 +69,6 @@ class App2 extends React.Component {
         this.context.user.receiveHistory = receiveHistory;
         this.context.user.receiveBalance = receiveBalance;
         this.context.user.distinctReceives = distinctReceives;
-        console.log("found new receive coins", voted_charities);
         let newUser = this.context.user;
         this.context.updateUser(newUser);
       }

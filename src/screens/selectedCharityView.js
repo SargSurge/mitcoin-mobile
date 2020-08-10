@@ -59,6 +59,7 @@ export default class SelectedCharityView extends React.Component {
       }}
     >
       <TouchableOpacity
+        onPress={this.selectCharityOnWebsite}
         style={{
           borderRadius: 10,
           borderColor: "#9CD6B0",
