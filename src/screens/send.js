@@ -116,6 +116,7 @@ export default class Send extends React.Component {
     displayName: "",
     modalVisible: true,
     sendingToName: "",
+    validationSchema: this.validationSchema,
   };
 
   dismissList = () => {
@@ -300,6 +301,10 @@ export default class Send extends React.Component {
   };
 
   handlePress = async (values, actions) => {
+    console.log(
+      "this is parse int for yup",
+      parseInt(this.context.user.giveBalance)
+    );
     let body = JSON.stringify({
       giverKerberos: this.context.user.kerberos,
       receiverKerberos: values.receiverKerberos,
@@ -320,6 +325,25 @@ export default class Send extends React.Component {
     await actions.setSubmitting(false);
     await actions.resetForm();
     this.refs.toast.show("Coins sent successfully!", DURATION.LENGTH_LONG);
+
+    //Hacky solution to fix this.context not updating
+    let newValidationSchema = yup.object().shape({
+      receiverKerberos: yup
+        .string()
+        .required("Required!")
+
+        .test("validreceiver", "Kerberos entered is invalid", (value) =>
+          this.test_kerb(value)
+        ),
+      amount: yup
+        .number()
+        .typeError("Amount must be a number")
+        .min(1, "Invalid Amount!")
+        .max(parseInt(this.context.user.giveBalance), "Not enough coins!")
+        .required("Required!"),
+    });
+
+    this.setState({ validationSchema: newValidationSchema });
   };
 
   validationSchema = yup.object().shape({
@@ -334,7 +358,7 @@ export default class Send extends React.Component {
       .number()
       .typeError("Amount must be a number")
       .min(1, "Invalid Amount!")
-      .max(parseInt(this.context.user.giveBalance), "Invalid Amount!")
+      .max(parseInt(this.context.user.giveBalance), "Not enough coins!")
       .required("Required!"),
   });
 
@@ -462,7 +486,7 @@ export default class Send extends React.Component {
                     comment: "",
                   }}
                   onSubmit={this.handlePress}
-                  validationSchema={this.validationSchema}
+                  validationSchema={this.state.validationSchema}
                 >
                   {(formikProps) => (
                     <Form>
@@ -650,8 +674,8 @@ export default class Send extends React.Component {
               </View>
             </DismissKeyboard>
           </ScrollView>
-          {/* {this.modal_function()} */}
-          {this.modal()}
+          {this.modal_function()}
+          {/* {this.modal()} */}
         </View>
       </View>
     );
