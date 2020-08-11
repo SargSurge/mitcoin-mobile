@@ -20,7 +20,7 @@ export default class CheckToken extends React.Component {
   static contextType = UserContext;
   componentDidMount = async () => {
     // Check if there is a token stored to skip logging in
-    time1 = Date.now();
+    let time1 = Date.now();
     let token;
     try {
       token = await SecureStore.getItemAsync("refreshToken");
@@ -32,9 +32,7 @@ export default class CheckToken extends React.Component {
     }
     time2 = Date.now();
     console.log("this is time for secure store", time2 - time1);
-    console.log("token from secure store", token);
-    // console.log("this is type of secure store token");
-    // console.log(typeof token);
+
     if (!token) {
       this.props.navigation.navigate("Login");
       return;
@@ -47,24 +45,30 @@ export default class CheckToken extends React.Component {
         },
       };
       time3 = Date.now();
-      //This is to prevent excessive loading
+      // This is to prevent excessive loading
       // setTimeout(() => {
       //   console.log("timeout limit reached");
       //   this.props.navigation.navigate("Login");
       //   return;
       // }, 20000);
-      let response = await fetch(WEB_URL + "auth/verify", options);
-      let responseJSON = await response.json();
-      // console.log("this is response: ", responseJSON);
+      let response, responseJSON;
+      try {
+        response = await fetch(WEB_URL + "auth/verify", options);
+        responseJSON = await response.json();
+      } catch (e) {
+        console.error(e);
+        console.log("cannot verify auth");
+      }
+
       if (responseJSON.active) {
         this.context.updateUser(responseJSON.user);
         this.context.updateVotingStatus(responseJSON.is_voting_closed);
         this.props.navigation.navigate("Send");
-        time4 = Date.now();
+        let time4 = Date.now();
         console.log("this is time for API request", time4 - time3);
         return;
       } else {
-        time4 = Date.now();
+        let time4 = Date.now();
         console.log("this is time for API request", time4 - time3);
         this.props.navigation.navigate("Login");
         return;

@@ -16,7 +16,7 @@ import VotedCharities from "./votedCharities.js";
 import SelectedCharityView from "./selectedCharityView.js";
 import * as SecureStore from "expo-secure-store";
 
-sample_user = {
+let sample_user = {
   mitid: 924392664,
   kerberos: "bntanga",
   giveBalance: 743,
@@ -25,7 +25,7 @@ sample_user = {
   transactionHistory: [],
 };
 
-sample_user_modified = {
+let sample_user_modified = {
   mitid: 924392664,
   kerberos: "bntanga",
   giveBalance: 743,
@@ -45,8 +45,14 @@ export default class Profile extends React.Component {
   state = { testtext: "Fake words" };
 
   logout = async () => {
-    await SecureStore.deleteItemAsync("refreshToken");
-    await SecureStore.deleteItemAsync("accessToken");
+    try {
+      await SecureStore.deleteItemAsync("refreshToken");
+      await SecureStore.deleteItemAsync("accessToken");
+    } catch (e) {
+      console.error(e);
+      console.log("failed to delete from secure store");
+    }
+
     this.props.navigation.navigate("Login");
   };
 
@@ -58,7 +64,7 @@ export default class Profile extends React.Component {
     const user = this.context.user;
 
     // const user = userSample;
-    custom_num = (num) => (
+    let custom_num = (num) => (
       <Text
         style={{
           ...Fonts.regular_text,
@@ -82,7 +88,7 @@ export default class Profile extends React.Component {
       </Text>
     );
 
-    border = (
+    let border = (
       <View
         style={{
           borderTopColor: "#982B39",
@@ -99,6 +105,7 @@ export default class Profile extends React.Component {
           <Text
             style={{
               alignSelf: "center",
+              textAlign: "center",
               marginTop: 32,
               marginBottom: 24,
               ...Fonts.title,
@@ -146,29 +153,34 @@ export default class Profile extends React.Component {
             .{/* change kerberos to actual ID */}
           </Text>
 
-          {this.context.voting_closed ? (
-            //   <SelectedCharityView
-            //     selected_charity={user.selectedCharity}
+          {
+            this.context.voting_closed ? (
+              <SelectedCharityView
+                selected_charity={user.selectedCharity}
+                mitid={user.mitid}
+              />
+            ) : (
+              // <VotedCharities
+              //   charities={user.votedCharities}
+              //   mitid={user.mitid}
+              // />
+              <SelectedCharityView
+                selected_charity={user.selectedCharity}
+                mitid={user.mitid}
+              />
+            )
+            //   <VotedCharities
+            //     charities={user.votedCharities}
             //     mitid={user.mitid}
             //   />
             // )
-            <VotedCharities
-              charities={user.votedCharities}
-              mitid={user.mitid}
-            />
-          ) : (
-            <VotedCharities
-              charities={user.votedCharities}
-              mitid={user.mitid}
-            />
-          )}
+          }
 
           {border}
 
           <TouchableOpacity
             onPress={() => setTimeout(this.logout, 200)}
             style={{
-              padding: 10,
               elevation: 2,
               marginTop: 30,
               marginBottom: 60,

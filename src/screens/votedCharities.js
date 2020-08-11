@@ -39,7 +39,13 @@ NoCharitySelectedView = () => (
 );
 CharityAndLink = ({ charity_name, charity_link }) => {
   visitWebsite = async () => {
-    let result = await WebBrowser.openBrowserAsync(charity_link);
+      try{let result = await WebBrowser.openBrowserAsync(charity_link);}
+      catch (e) {
+          console.error(e)
+          console.log("error visiting site")
+
+      }
+
   };
   return (
     <View style={{ width: "100%" }}>
@@ -97,12 +103,22 @@ export default class VotedCharities extends React.Component {
       charities: this.props.charities,
     });
 
-    let response = await fetch(WEB_URL + "api/get_charity_links", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: body,
-    });
-    let responseJSON = await response.json();
+
+    let response, responseJSON;
+    try{
+        response = await fetch(WEB_URL + "api/get_charity_links", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: body,
+        });
+        responseJSON = await response.json();
+
+    }
+catch (e) {
+
+        console.error(e);
+        console.log("error fetching charity links")
+}
 
     this.setState({ charities_with_links: responseJSON });
   };

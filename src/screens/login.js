@@ -4,6 +4,7 @@ import { H2, Button, Text } from "native-base";
 import * as AuthSession from "expo-auth-session";
 import * as SecureStore from "expo-secure-store";
 import { UserContext } from "../UserContext.js";
+import Fonts from "./fonts.js";
 
 import { CLIENT_ID, WEB_URL } from "../config.js";
 
@@ -24,10 +25,12 @@ export default class Login extends React.Component {
       <View style={styles.container}>
         <View style={styles.welcomeViewStyle}>
           <Image style={styles.imgStyle} source={imgLogo} />
-          <H2>MITcoin</H2>
+          <Text style={{ ...Fonts.header, fontWeight: "bold", fontSize: 24 }}>
+            MITCoin
+          </Text>
         </View>
         <Button danger style={styles.buttonStyle} onPress={this.handlePress}>
-          <Text>Login with Kerberos</Text>
+          <Text style={{ ...Fonts.header }}>Login with Kerberos</Text>
         </Button>
       </View>
     );
@@ -35,31 +38,50 @@ export default class Login extends React.Component {
 
   handlePress = async () => {
     let redirectURL = AuthSession.getRedirectUrl();
-    console.log("this is redirect uri", redirectURL);
-    let result = await AuthSession.startAsync({
-      authUrl:
-        authurlstart +
-        encodeURIComponent(redirectURL) +
-        "&client_id=" +
-        CLIENT_ID,
-    });
-    let code = result.params.code;
-    console.log("this is code", code);
 
-    let response = await fetch(WEB_URL + "auth/get_token?code=" + code);
-    let responseJSON = await response.json();
+    let result;
+    try {
+      result = await AuthSession.startAsync({
+        authUrl:
+          authurlstart +
+          encodeURIComponent(redirectURL) +
+          "&client_id=" +
+          CLIENT_ID,
+      });
+    } catch (e) {
+      console.error(e);
+      console.log("cannot start auth session");
+    }
+
+    let code = result.params.code;
+
+    let response, responseJSON;
+    try {
+      response = await fetch(WEB_URL + "auth/get_token?code=" + code);
+      responseJSON = await response.json();
+    } catch (e) {
+      console.error(e);
+      console.log("error fetching user");
+    }
 
     if (responseJSON) {
-      // console.log("response again", JSON.stringify(responseJSON.access_token));
-      await SecureStore.setItemAsync("accessToken", responseJSON.access_token);
-      // console.log("this is type if refresh token");
-      // console.log(typeof responseJSON.refresh_token);
-      await SecureStore.setItemAsync(
-        "refreshToken",
-        responseJSON.refresh_token
-      );
-      await this.context.updateUser(responseJSON.user);
-      await this.context.updateVotingStatus(responseJSON.is_voting_closed);
+      try {
+        await SecureStore.setItemAsync(
+          "accessToken",
+          responseJSON.access_token
+        );
+
+        await SecureStore.setItemAsync(
+          "refreshToken",
+          responseJSON.refresh_token
+        );
+      } catch (e) {
+        console.error(e);
+        console.log("error uploading to secure store");
+      }
+
+      this.context.updateUser(responseJSON.user);
+      this.context.updateVotingStatus(responseJSON.is_voting_closed);
 
       this.props.navigation.navigate("Send");
     } else {

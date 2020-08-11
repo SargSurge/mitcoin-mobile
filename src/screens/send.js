@@ -289,16 +289,24 @@ export default class Send extends React.Component {
     this.setState({ showSpinner: true });
 
     time1 = Date.now();
-    let response = await fetch(
-      `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    let response, responseJSON;
+    try {
+      response = await fetch(
+        `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      responseJSON = await response.json();
+    } catch (e) {
+      console.error(e);
+      console.log("failed to fetch data from people api");
+      return;
+    }
+
     time2 = Date.now();
     console.log("time fetching", time2 - time1);
-    let responseJSON = await response.json();
 
     this.setState({
       searchResults: responseJSON.users,
@@ -307,71 +315,45 @@ export default class Send extends React.Component {
       // showDropdown: true,
     });
     time3 = Date.now();
-    // console.log("time completing function", time3 - time2);
   };
 
-  test_kerb = async (kerb) => {
-    // let i;
-    // for (i = 0; i < this.state.searchResults.length; i++) {
-    //   let user = this.state.searchResults[i];
-    //   if (user.kerb === kerb) {
-    //     return true;
-    //   }
-    // }
-
-    // return false;
-
-    console.log("test kerb called with", kerb);
-    let response = await fetch(
-      `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-
-    let responseJSON = await response.json();
-
-    let i;
-    for (i = 0; i < responseJSON.users.length; i++) {
-      let user = this.state.searchResults[i];
-      if (user.kerb === kerb) {
-        console.log("in test passed", user.kerb);
-        return true;
-      }
-    }
-
-    console.log("failed test");
-    return false;
-  };
   init_socket = async () => {
     const socket = io(WEB_URL);
     socket.on("connect", async () => {
-      await this.context.updateSocketObject(socket);
+      this.context.updateSocketObject(socket);
     });
   };
 
   init_socket_part_2 = async () => {
-    const token = await SecureStore.getItemAsync("refreshToken");
+    let token;
+    try {
+      token = await SecureStore.getItemAsync("refreshToken");
+    } catch (e) {
+      console.error(e);
+      console.log("failed to get token");
+    }
     let body = JSON.stringify({
       socketid: this.context.socket_object.id,
       kerberos: this.context.user.kerberos,
     });
 
-    let response = await fetch(`${WEB_URL}api/initsocket`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      body: body,
-    });
-    let responseJSON = await response.json();
+    let response, responseJSON;
+    try {
+      response = await fetch(`${WEB_URL}api/initsocket`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        body: body,
+      });
+      responseJSON = await response.json();
+    } catch (e) {
+      console.error(e);
+      console.log("could not init socket");
+    }
   };
 
   handlePress = async (values, actions) => {
     this.setState({ showSpinner: true });
-    console.log(
-      "this is parse int for yup",
-      parseInt(this.context.user.giveBalance)
-    );
+
     let body = JSON.stringify({
       giverKerberos: this.context.user.kerberos,
       receiverKerberos: values.receiverKerberos,
@@ -380,26 +362,47 @@ export default class Send extends React.Component {
       receiverName: this.state.sendingToName,
       giverName: this.context.user.fullName,
     });
-    const token = await SecureStore.getItemAsync("refreshToken");
-    let response = await fetch(WEB_URL + "api/idsend", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      body: body,
-    });
-    let responseJSON = await response.json();
+
+    let token;
+    try {
+      token = await SecureStore.getItemAsync("refreshToken");
+    } catch (e) {
+      console.error(e);
+      console.log("could not get token");
+      return;
+    }
+
+    let response, responseJSON;
+    try {
+      response = await fetch(WEB_URL + "api/idsend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        body: body,
+      });
+      responseJSON = await response.json();
+    } catch (e) {
+      console.error(e);
+      console.log("errored failing to send coins");
+      return;
+    }
+
     if (responseJSON.kerbError) {
       //do something
-      console.log("invalid kerb");
-      console.log(responseJSON);
+
       this.setState({ showSpinner: false, kerbError: "Invalid Kerberos" });
 
       return;
     }
 
-    console.log("this is api response when crashing", responseJSON);
     this.context.updateUser(responseJSON);
-    await actions.setSubmitting(false);
-    await actions.resetForm();
+    try {
+      await actions.setSubmitting(false);
+      await actions.resetForm();
+    } catch (e) {
+      console.error(e);
+      console.log("error with formik stuff");
+    }
+
     this.refs.toast.show("Coins sent successfully!", DURATION.LENGTH_LONG);
 
     //Hacky solution to fix this.context not updating
@@ -585,7 +588,7 @@ export default class Send extends React.Component {
                             autoCapitalize="none"
                             autoCorrect={false}
                             value={formikProps.values.receiverKerberos}
-                            placeholder="Search for receiver by name or kerberos ID"
+                            placeholder="Search for receiver by name or kerb"
                             onChangeText={(text) => {
                               this.setState({
                                 showDropdown: false,
@@ -614,7 +617,10 @@ export default class Send extends React.Component {
                             onPress={async () => {
                               await this.fetch_data(
                                 formikProps.values.receiverKerberos
-                              );
+                              ).catch((error) => {
+                                console.error(e);
+                                console.log("error fetchin data again");
+                              });
 
                               this.setState({ showDropdown: true });
                             }}

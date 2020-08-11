@@ -12,12 +12,29 @@ export default class SelectedCharityView extends React.Component {
     let body = JSON.stringify({
       charities: [this.props.selected_charity],
     });
-    let response = await fetch(WEB_URL + "api/get_charity_links", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: body,
-    });
-    let responseJSON = await response.json();
+    let response;
+    try{response = await fetch(WEB_URL + "api/get_charity_links", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: body,
+    });}
+    catch(error){
+        console.error(error)
+        console.log("error fetching links")
+        return
+
+    }
+    let responseJSON;
+    try{
+        responseJSON = await response.json();
+
+    }
+    catch(error){
+        console.error(error)
+        console.log("failed to convert to json")
+        return
+    }
+
 
     this.setState({
       charity_name: responseJSON[0].charity,
@@ -25,12 +42,22 @@ export default class SelectedCharityView extends React.Component {
     });
   };
   visitWebsite = async () => {
-    let result = await WebBrowser.openBrowserAsync(this.state.charity_link);
+      try{  let result = await WebBrowser.openBrowserAsync(this.state.charity_link);}
+      catch (e) {
+          console.error(e)
+          console.log("cannot visit website")
+      }
+
   };
   selectCharityOnWebsite = async () => {
-    let result = await Linking.openURL(
-      WEB_URL + "selectcharity/" + this.props.mitid
-    );
+      try{result = await Linking.openURL(
+          WEB_URL + "selectcharity/" + this.props.mitid
+      );}
+      catch (e) {
+          console.error(e)
+          console.log("cannot visit website")
+      }
+
     //rerendering to refresh results
     // this is not working, find other solution
     this.setState({});

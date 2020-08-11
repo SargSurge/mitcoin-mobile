@@ -17,9 +17,7 @@ export default function NotificationTest() {
     Notifications.addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });
-    Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log(response);
-    });
+    Notifications.addNotificationResponseReceivedListener((response) => {});
 
     // return () => {
     //   Notifications.removeAllNotificationListeners();
@@ -83,7 +81,7 @@ async function registerForPushNotificationsAsync(kerberos) {
   //   );
   //   let tokenJSON = await token.json();
   //   if (tokenJSON.notificationToken !== "") {
-  //     console.log("this is response token " + tokenJSON.notificationToken);
+
   //     return tokenJSON.notificationToken;
   //   }
 
@@ -91,14 +89,29 @@ async function registerForPushNotificationsAsync(kerberos) {
   if (Constants.isDevice) {
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS
-    );
+    ).catch((error) => {
+      console.log(error);
+      return;
+    });
     let finalStatus = existingStatus;
     if (existingStatus !== "granted") {
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      const { status } = await Permissions.askAsync(
+        Permissions.NOTIFICATIONS
+      ).catch((error) => {
+        console.error(error);
+        console.log("failed to ask for permission");
+        return;
+      });
       //in case permission is being asked for again
       finalStatus = status;
       if (status === "granted") {
-        token = (await Notifications.getExpoPushTokenAsync()).data;
+        try {
+          token = (await Notifications.getExpoPushTokenAsync()).data;
+        } catch (e) {
+          console.error(e);
+          console.log("failed to ask expo for notification token");
+        }
+
         request_and_set_new_expo_token(token, kerberos);
         return;
       }
@@ -107,8 +120,19 @@ async function registerForPushNotificationsAsync(kerberos) {
       alert("Failed to get push token for push notification!");
       return;
     }
-    let tokenCheck = await SecureStore.getItemAsync("notificationToken");
+    let tokenCheck;
+    try {
+      tokenCheck = await SecureStore.getItemAsync("notificationToken");
+    } catch (e) {
+      console.error(e);
+      console.log("could not fetch secure store thing");
+    }
+
     if (tokenCheck !== null) {
+      console.log("this is stored token Check", tokenCheck);
+      // await SecureStore.deleteItemAsync("notificationToken");
+      // tokenCheck = (await Notifications.getExpoPushTokenAsync()).data;
+      request_and_set_new_expo_token(tokenCheck, kerberos);
       if (Platform.OS === "android") {
         Notifications.setNotificationChannelAsync("default", {
           name: "default",
@@ -122,7 +146,13 @@ async function registerForPushNotificationsAsync(kerberos) {
       //   request_and_set_new_expo_token(tokenCheck, kerberos);
       return tokenCheck;
     }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
+    try {
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+    } catch (e) {
+      console.error(e);
+      console.log("error asking for token");
+      return;
+    }
   } else {
     alert("Must use physical device for Push Notifications");
   }
@@ -140,32 +170,45 @@ async function registerForPushNotificationsAsync(kerberos) {
 }
 
 async function request_and_set_new_expo_token(token, kerberos) {
+  console.log("this is token being received", token);
   let body = JSON.stringify({
     notificationToken: token,
     // kerberos: contextObject.user.kerberos,
     kerberos: kerberos,
   });
+  let authToken;
+  try {
+    authToken = await SecureStore.getItemAsync("refreshToken");
+  } catch (e) {
+    console.error(e);
+    console.log("failed getting auth token");
+    return;
+  }
 
-  const authToken = await SecureStore.getItemAsync("refreshToken");
+  let response, responseJSON;
+  try {
+    response = await fetch(`${WEB_URL}api/set_notification_token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: authToken },
+      body: body,
+    });
+    responseJSON = await response.json();
+  } catch (e) {
+    console.error(e);
+    console.log("couldnt set notification token");
+  }
 
-  let response = await fetch(`${WEB_URL}api/set_notification_token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: authToken },
-    body: body,
-  });
+  try {
+    await SecureStore.setItemAsync(
+      "notificationToken",
+      responseJSON.user.notificationToken[0]
+    );
+  } catch (e) {
+    console.error(e);
+    console.log("could not save token to secure store");
+  }
 
-  //   console.log("this is weird response" + JSON.stringify(response));
-  let responseJSON = await response.json();
-
-  //   console.log(" Notifications-- " + "user: " + JSON.stringify(responseJSON));
-  //   console.log(
-  //     "this should be token" + JSON.stringify(responseJSON.user.notificationToken)
-  //   );
-  await SecureStore.setItemAsync(
-    "notificationToken",
-    JSON.stringify(responseJSON.user.notificationToken)
-  );
-  return responseJSON.notificationToken;
+  return responseJSON.user.notificationToken[0];
 }
 
 export { registerForPushNotificationsAsync };

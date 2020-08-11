@@ -16,41 +16,48 @@ class App2 extends React.Component {
       //why does this work?
       // await this.init_socket_part_2();
       setTimeout(this.init_socket_part_2, 3000);
-      console.log("updated object", this.context.socket_object.id);
     });
   };
 
   init_socket_part_2 = async () => {
-    const token = await SecureStore.getItemAsync("refreshToken");
+    let token;
+    try {
+      token = await SecureStore.getItemAsync("refreshToken");
+    } catch (error) {
+      console.error(error);
+      console.log("cannot fetch refresh token");
+      return;
+    }
+
     let body = JSON.stringify({
       socketid: this.context.socket_object.id,
       kerberos: this.context.user.kerberos,
     });
+    let response;
+    try {
+      response = await fetch(`${WEB_URL}api/initsocket`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: token },
+        body: body,
+      });
+    } catch (error) {
+      console.error(error);
+      console.log("cannot init socket");
+    }
 
-    let response = await fetch(`${WEB_URL}api/initsocket`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: token },
-      body: body,
-    });
-    let responseJSON = await response.json();
     this.everythingSocketOn();
   };
 
   everythingSocketOn = () => {
-    console.log("in everything function");
-    console.log("is socket there", this.context.socket_object.id);
     this.context.socket_object.on("charity_selected", (charity) => {
-      console.log("found charity selected", charity);
-
       this.context.user.selectedCharity = charity;
       let newUser = this.context.user;
       this.context.updateUser(newUser);
-      console.log("context new charity", this.context.user.selectedCharity);
     });
 
     this.context.socket_object.on("charities_voted", (voted_charities) => {
       this.context.user.votedCharities = voted_charities;
-      console.log("found charity voted", voted_charities);
+
       let newUser = this.context.user;
       this.context.updateUser(newUser);
 
@@ -60,12 +67,6 @@ class App2 extends React.Component {
     this.context.socket_object.on(
       "receive_coins",
       ({ receiveHistory, receiveBalance, distinctReceives }) => {
-        console.log(
-          "this is data",
-          receiveBalance,
-          receiveHistory,
-          distinctReceives
-        );
         this.context.user.receiveHistory = receiveHistory;
         this.context.user.receiveBalance = receiveBalance;
         this.context.user.distinctReceives = distinctReceives;
