@@ -4,7 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { UserContext } from "../UserContext.js";
 import * as Notifications from "expo-notifications";
 import Background from "./imageBackground.js";
-
+import AnimatedLoader from "react-native-animated-loader";
 import { WEB_URL } from "../config.js";
 import { Spinner } from "native-base";
 
@@ -20,7 +20,6 @@ export default class CheckToken extends React.Component {
   static contextType = UserContext;
   componentDidMount = async () => {
     // Check if there is a token stored to skip logging in
-
     time1 = Date.now();
     let token;
     try {
@@ -47,9 +46,7 @@ export default class CheckToken extends React.Component {
           Authorization: token,
         },
       };
-
       time3 = Date.now();
-
       //This is to prevent excessive loading
       // setTimeout(() => {
       //   console.log("timeout limit reached");
@@ -92,17 +89,27 @@ export default class CheckToken extends React.Component {
         }}
       >
         <Background />
+
         <Text
           style={{
             textAlign: "center",
             width: "100%",
             fontSize: 24,
             marginBottom: 14,
+            color: "black",
           }}
         >
           Loading...
         </Text>
-        <Spinner color="red" />
+        <AnimatedLoader
+          visible={true}
+          overlayColor="rgba(255,255,255,0.75)"
+          source={require("./3895-loader.json")}
+          animationStyle={{ width: 200, height: 200, marginTop: 30 }}
+          speed={1}
+        />
+
+        {/* <Spinner color="red" /> */}
       </View>
     );
   }

@@ -127,9 +127,36 @@ export default class Send extends React.Component {
     displayName: "",
     modalVisible: true,
     sendingToName: "",
-    validationSchema: this.validationSchema,
+    validationSchema: yup.object().shape({
+      amount: yup
+        .number()
+        .typeError("Amount must be a number")
+        .min(1, "Invalid Amount!")
+        .max(parseInt(this.context.user.giveBalance), "Not enough coins")
+        .required("Required!"),
+      receiverKerberos: yup
+        .string()
+        .required("Required!")
+        .test(
+          "selfReceiver",
+          "Cannot send coins to self",
+          (kerb) => kerb !== this.context.user.kerberos
+        ),
+    }),
     showSpinner: false,
+    //another hacky solution to life because kerb validation is done on backend
+    kerbError: "",
   };
+
+  // validationSchema = yup.object().shape({
+  //   amount: yup
+  //     .number()
+  //     .typeError("Amount must be a number")
+  //     .min(1, "Invalid Amount!")
+  //     .max(parseInt(this.context.user.giveBalance), "Not enough coins")
+  //     .required("Required!"),
+  //   receiverKerberos: yup.string().required("Required!"),
+  // });
 
   dismissList = () => {
     this.setState({ showDropdown: false });
@@ -364,10 +391,12 @@ export default class Send extends React.Component {
       //do something
       console.log("invalid kerb");
       console.log(responseJSON);
-      this.setState({ showSpinner: false });
+      this.setState({ showSpinner: false, kerbError: "Invalid Kerberos" });
+
       return;
     }
 
+    console.log("this is api response when crashing", responseJSON);
     this.context.updateUser(responseJSON);
     await actions.setSubmitting(false);
     await actions.resetForm();
@@ -381,7 +410,14 @@ export default class Send extends React.Component {
         .min(1, "Invalid Amount!")
         .max(parseInt(this.context.user.giveBalance), "Not enough coins")
         .required("Required!"),
-      receiverKerberos: yup.string().required("Required!"),
+      receiverKerberos: yup
+        .string()
+        .required("Required!")
+        .test(
+          "selfReceiver",
+          "Cannot send coins to self",
+          (kerb) => kerb !== this.context.user.kerberos
+        ),
     });
 
     this.setState({
@@ -389,16 +425,6 @@ export default class Send extends React.Component {
       showSpinner: false,
     });
   };
-
-  validationSchema = yup.object().shape({
-    amount: yup
-      .number()
-      .typeError("Amount must be a number")
-      .min(1, "Invalid Amount!")
-      .max(parseInt(this.context.user.giveBalance), "Not enough coins")
-      .required("Required!"),
-    receiverKerberos: yup.string().required("Required!"),
-  });
 
   componentDidMount() {
     // this.init_socket();
@@ -547,12 +573,12 @@ export default class Send extends React.Component {
                             paddingTop: 4,
                           }}
                         >
-                          <Text style={{ color: "red" }}>
+                          <Label style={{ color: "red" }}>
                             {formikProps.errors.receiverKerberos &&
                             formikProps.touched.receiverKerberos
                               ? formikProps.errors.receiverKerberos
-                              : null}
-                          </Text>
+                              : this.state.kerbError}
+                          </Label>
                           <Input
                             returnKeyType="done"
                             blurOnSubmit={true}
@@ -561,7 +587,10 @@ export default class Send extends React.Component {
                             value={formikProps.values.receiverKerberos}
                             placeholder="Search for receiver by name or kerberos ID"
                             onChangeText={(text) => {
-                              this.setState({ showDropdown: false });
+                              this.setState({
+                                showDropdown: false,
+                                kerbError: "",
+                              });
 
                               let func = formikProps.handleChange(
                                 "receiverKerberos"
