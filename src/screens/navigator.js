@@ -29,6 +29,7 @@ const CustomDrawerContentComponent = (props) => (
           height: 150,
           resizeMode: "contain",
           marginBottom: 16,
+          marginTop: 8,
         }}
       />
       <DrawerItems {...props} />
@@ -41,13 +42,14 @@ const AppDrawer = createDrawerNavigator(
     Send: SendScreen,
     Profile: ProfileScreen,
     History: HistoryScreen,
+
     "About MITCoin": AboutScreen,
     // Notifications: NotificationScreen,
   },
   { overlayColor: "#00000055", contentComponent: CustomDrawerContentComponent }
   // { drawerStyle: { width: "100%" } }
 );
-
+//comme
 const navigator = createSwitchNavigator(
   {
     Login: LoginScreen,

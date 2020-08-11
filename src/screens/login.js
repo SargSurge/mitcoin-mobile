@@ -35,6 +35,7 @@ export default class Login extends React.Component {
 
   handlePress = async () => {
     let redirectURL = AuthSession.getRedirectUrl();
+    console.log("this is redirect uri", redirectURL);
     let result = await AuthSession.startAsync({
       authUrl:
         authurlstart +
@@ -43,11 +44,16 @@ export default class Login extends React.Component {
         CLIENT_ID,
     });
     let code = result.params.code;
+    console.log("this is code", code);
+
     let response = await fetch(WEB_URL + "auth/get_token?code=" + code);
     let responseJSON = await response.json();
 
     if (responseJSON) {
+      // console.log("response again", JSON.stringify(responseJSON.access_token));
       await SecureStore.setItemAsync("accessToken", responseJSON.access_token);
+      // console.log("this is type if refresh token");
+      // console.log(typeof responseJSON.refresh_token);
       await SecureStore.setItemAsync(
         "refreshToken",
         responseJSON.refresh_token
@@ -87,5 +93,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     margin: 14,
     height: 50,
+    backgroundColor: "#982B39",
   },
 });

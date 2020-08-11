@@ -163,7 +163,7 @@ async function request_and_set_new_expo_token(token, kerberos) {
   //   );
   await SecureStore.setItemAsync(
     "notificationToken",
-    responseJSON.user.notificationToken
+    JSON.stringify(responseJSON.user.notificationToken)
   );
   return responseJSON.notificationToken;
 }

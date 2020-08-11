@@ -11,14 +11,32 @@ export default class About extends React.Component {
       <Container>
         <Header navigation={this.props.navigation} title="About MITCoin" />
 
-        <Tabs>
-          <Tab heading="The Project">
+        <Tabs tabBarUnderlineStyle={{ backgroundColor: "#3177F0" }}>
+          <Tab
+            heading="The Project"
+            activeTextStyle={{ color: "#3177F0" }}
+            tabStyle={{ backgroundColor: "#F8F8F8" }}
+            activeTabStyle={{ backgroundColor: "#F8F8F8" }}
+            textStyle={{ color: "#919191" }}
+          >
             <TheProject />
           </Tab>
-          <Tab heading="Your Coins">
+          <Tab
+            heading="Your Coins"
+            activeTextStyle={{ color: "#3177F0" }}
+            tabStyle={{ backgroundColor: "#F8F8F8" }}
+            activeTabStyle={{ backgroundColor: "#F8F8F8" }}
+            textStyle={{ color: "#919191" }}
+          >
             <TheCoins />
           </Tab>
-          <Tab heading="The Team">
+          <Tab
+            heading="The Team"
+            activeTextStyle={{ color: "#3177F0" }}
+            tabStyle={{ backgroundColor: "#F8F8F8" }}
+            activeTabStyle={{ backgroundColor: "#F8F8F8" }}
+            textStyle={{ color: "#919191" }}
+          >
             <TheTeam />
           </Tab>
         </Tabs>
