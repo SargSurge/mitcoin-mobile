@@ -261,7 +261,7 @@ export default class Send extends React.Component {
 
     this.setState({ showSpinner: true });
 
-    time = Date.now();
+    time1 = Date.now();
     let response = await fetch(
       `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`,
       {
@@ -270,7 +270,7 @@ export default class Send extends React.Component {
       }
     );
     time2 = Date.now();
-    console.log("time fetching", time2 - time);
+    console.log("time fetching", time2 - time1);
     let responseJSON = await response.json();
 
     this.setState({
@@ -360,6 +360,13 @@ export default class Send extends React.Component {
       body: body,
     });
     let responseJSON = await response.json();
+    if (responseJSON.kerbError) {
+      //do something
+      console.log("invalid kerb");
+      console.log(responseJSON);
+      this.setState({ showSpinner: false });
+      return;
+    }
 
     this.context.updateUser(responseJSON);
     await actions.setSubmitting(false);
@@ -368,14 +375,13 @@ export default class Send extends React.Component {
 
     //Hacky solution to fix this.context not updating
     let newValidationSchema = yup.object().shape({
-      receiverKerberos: yup.string().required("Required!"),
-
       amount: yup
         .number()
         .typeError("Amount must be a number")
         .min(1, "Invalid Amount!")
         .max(parseInt(this.context.user.giveBalance), "Not enough coins")
         .required("Required!"),
+      receiverKerberos: yup.string().required("Required!"),
     });
 
     this.setState({
@@ -385,14 +391,13 @@ export default class Send extends React.Component {
   };
 
   validationSchema = yup.object().shape({
-    receiverKerberos: yup.string().required("Required!"),
-
     amount: yup
       .number()
       .typeError("Amount must be a number")
       .min(1, "Invalid Amount!")
       .max(parseInt(this.context.user.giveBalance), "Not enough coins")
       .required("Required!"),
+    receiverKerberos: yup.string().required("Required!"),
   });
 
   componentDidMount() {
@@ -542,12 +547,12 @@ export default class Send extends React.Component {
                             paddingTop: 4,
                           }}
                         >
-                          <Label style={{ color: "red" }}>
+                          <Text style={{ color: "red" }}>
                             {formikProps.errors.receiverKerberos &&
                             formikProps.touched.receiverKerberos
                               ? formikProps.errors.receiverKerberos
                               : null}
-                          </Label>
+                          </Text>
                           <Input
                             returnKeyType="done"
                             blurOnSubmit={true}
