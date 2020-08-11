@@ -49,6 +49,13 @@ export default class CheckToken extends React.Component {
       };
 
       time3 = Date.now();
+
+      //This is to prevent excessive loading
+      // setTimeout(() => {
+      //   console.log("timeout limit reached");
+      //   this.props.navigation.navigate("Login");
+      //   return;
+      // }, 20000);
       let response = await fetch(WEB_URL + "auth/verify", options);
       let responseJSON = await response.json();
       // console.log("this is response: ", responseJSON);
@@ -63,11 +70,13 @@ export default class CheckToken extends React.Component {
         time4 = Date.now();
         console.log("this is time for API request", time4 - time3);
         this.props.navigation.navigate("Login");
+        return;
       }
     } catch (err) {
       time4 = Date.now();
       console.log("this is time for API request", time4 - time3);
       this.props.navigation.navigate("Login");
+      return;
     }
   };
 

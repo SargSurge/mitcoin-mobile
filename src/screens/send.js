@@ -247,17 +247,16 @@ export default class Send extends React.Component {
   fetch_data = async (kerb_or_name) => {
     //Too little data to search through
 
-    const token = await SecureStore.getItemAsync("refreshToken");
-
-    console.log("what token is being sent", token);
-
+    time = Date.now();
     let response = await fetch(
       `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: token },
+        headers: { "Content-Type": "application/json" },
       }
     );
+    time2 = Date.now();
+    console.log("time fetching", time2 - time);
     let responseJSON = await response.json();
 
     this.setState({
@@ -265,6 +264,8 @@ export default class Send extends React.Component {
       rerender: false,
       showDropdown: true,
     });
+    time3 = Date.now();
+    // console.log("time completing function", time3 - time2);
   };
 
   test_kerb = (kerb) => {
@@ -527,6 +528,9 @@ export default class Send extends React.Component {
                               func(text);
                             }}
                           />
+                          <TouchableOpacity>
+                            <Text>Search</Text>
+                          </TouchableOpacity>
                         </Item>
                         {this.state.showDropdown ? (
                           <View style={{ width: "100%", height: "100%" }}>
