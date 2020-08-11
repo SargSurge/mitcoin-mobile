@@ -1,6 +1,17 @@
 import React from "react";
 import Toast, { DURATION } from "react-native-easy-toast";
-import { Form, Item, Input, View, H1, Button, Label, Text } from "native-base";
+import Spinner from "react-native-loading-spinner-overlay";
+import {
+  Form,
+  Item,
+  Input,
+  View,
+  H1,
+  Button,
+  Label,
+  Text,
+  // Spinner,
+} from "native-base";
 import Hamburger from "./hamburger";
 
 import {
@@ -117,6 +128,7 @@ export default class Send extends React.Component {
     modalVisible: true,
     sendingToName: "",
     validationSchema: this.validationSchema,
+    showSpinner: false,
   };
 
   dismissList = () => {
@@ -247,6 +259,8 @@ export default class Send extends React.Component {
   fetch_data = async (kerb_or_name) => {
     //Too little data to search through
 
+    this.setState({ showSpinner: true });
+
     time = Date.now();
     let response = await fetch(
       `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`,
@@ -262,21 +276,45 @@ export default class Send extends React.Component {
     this.setState({
       searchResults: responseJSON.users,
       rerender: false,
-      showDropdown: true,
+      showSpinner: false,
+      // showDropdown: true,
     });
     time3 = Date.now();
     // console.log("time completing function", time3 - time2);
   };
 
-  test_kerb = (kerb) => {
+  test_kerb = async (kerb) => {
+    // let i;
+    // for (i = 0; i < this.state.searchResults.length; i++) {
+    //   let user = this.state.searchResults[i];
+    //   if (user.kerb === kerb) {
+    //     return true;
+    //   }
+    // }
+
+    // return false;
+
+    console.log("test kerb called with", kerb);
+    let response = await fetch(
+      `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    let responseJSON = await response.json();
+
     let i;
-    for (i = 0; i < this.state.searchResults.length; i++) {
+    for (i = 0; i < responseJSON.users.length; i++) {
       let user = this.state.searchResults[i];
       if (user.kerb === kerb) {
+        console.log("in test passed", user.kerb);
         return true;
       }
     }
 
+    console.log("failed test");
     return false;
   };
   init_socket = async () => {
@@ -302,6 +340,7 @@ export default class Send extends React.Component {
   };
 
   handlePress = async (values, actions) => {
+    this.setState({ showSpinner: true });
     console.log(
       "this is parse int for yup",
       parseInt(this.context.user.giveBalance)
@@ -329,37 +368,30 @@ export default class Send extends React.Component {
 
     //Hacky solution to fix this.context not updating
     let newValidationSchema = yup.object().shape({
-      receiverKerberos: yup
-        .string()
-        .required("Required!")
+      receiverKerberos: yup.string().required("Required!"),
 
-        .test("validreceiver", "Kerberos entered is invalid", (value) =>
-          this.test_kerb(value)
-        ),
       amount: yup
         .number()
         .typeError("Amount must be a number")
         .min(1, "Invalid Amount!")
-        .max(parseInt(this.context.user.giveBalance), "Not enough coins!")
+        .max(parseInt(this.context.user.giveBalance), "Not enough coins")
         .required("Required!"),
     });
 
-    this.setState({ validationSchema: newValidationSchema });
+    this.setState({
+      validationSchema: newValidationSchema,
+      showSpinner: false,
+    });
   };
 
   validationSchema = yup.object().shape({
-    receiverKerberos: yup
-      .string()
-      .required("Required!")
+    receiverKerberos: yup.string().required("Required!"),
 
-      .test("validreceiver", "Kerberos entered is invalid", (value) =>
-        this.test_kerb(value)
-      ),
     amount: yup
       .number()
       .typeError("Amount must be a number")
       .min(1, "Invalid Amount!")
-      .max(parseInt(this.context.user.giveBalance), "Not enough coins!")
+      .max(parseInt(this.context.user.giveBalance), "Not enough coins")
       .required("Required!"),
   });
 
@@ -480,6 +512,13 @@ export default class Send extends React.Component {
                   Send Coins
                   {custom_hash}
                 </Text>
+                {/* {this.state.showSpinner ? <Spinner color="red" /> : null} */}
+                <Spinner
+                  visible={this.state.showSpinner}
+                  size="large"
+                  color="#982B39"
+                />
+
                 <Formik
                   initialValues={{
                     receiverKerberos: "",
@@ -517,19 +556,44 @@ export default class Send extends React.Component {
                             value={formikProps.values.receiverKerberos}
                             placeholder="Search for receiver by name or kerberos ID"
                             onChangeText={(text) => {
-                              if (text.length > 2) {
-                                this.fetch_data(text);
-                              } else {
-                                this.setState({ showDropdown: false });
-                              }
+                              this.setState({ showDropdown: false });
+
                               let func = formikProps.handleChange(
                                 "receiverKerberos"
                               );
                               func(text);
                             }}
                           />
-                          <TouchableOpacity>
-                            <Text>Search</Text>
+                          <TouchableOpacity
+                            style={{
+                              // backgroundColor: "green",
+                              // color: "#982B39",
+                              borderWidth: 2,
+                              // height: "100%",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              padding: 8,
+                              borderRadius: 16,
+                              borderColor: "#982B39",
+                              // justifyContent: "center",
+                            }}
+                            onPress={async () => {
+                              await this.fetch_data(
+                                formikProps.values.receiverKerberos
+                              );
+
+                              this.setState({ showDropdown: true });
+                            }}
+                          >
+                            <Text
+                              style={{
+                                ...Fonts.header,
+                                color: "#982B39",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              Search
+                            </Text>
                           </TouchableOpacity>
                         </Item>
                         {this.state.showDropdown ? (
