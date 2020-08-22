@@ -1,18 +1,7 @@
 import React from "react";
 import Toast, { DURATION } from "react-native-easy-toast";
 import Spinner from "react-native-loading-spinner-overlay";
-import {
-  Form,
-  Item,
-  Input,
-  View,
-  H1,
-  Button,
-  Label,
-  Text,
-  // Spinner,
-} from "native-base";
-import Hamburger from "./hamburger";
+import { Form, Item, Input, View, Button, Label, Text } from "native-base";
 
 import {
   ScrollView,
@@ -22,7 +11,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  StatusBar,
+  Image,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -37,9 +26,11 @@ import Background from "./imageBackground.js";
 import Fonts from "./fonts.js";
 import * as SecureStore from "expo-secure-store";
 import { registerForPushNotificationsAsync } from "./notifications.js";
-import io from "socket.io-client";
+
+import CoinsIcon from "../../assets/images/CoinsIcon.png";
 
 const DismissKeyboard = ({ children, dismissList }) => (
+  //Component that dismisses the keyboard when it is active
   <TouchableWithoutFeedback
     onPress={() => {
       Keyboard.dismiss();
@@ -65,12 +56,12 @@ const CoinDetails = ({ text, value }) => (
       style={{
         ...Platform.select({
           ios: {
-            flex: 3,
+            flex: 4.5,
             fontWeight: "600",
             fontSize: 18,
           },
           android: {
-            flex: 3.5,
+            flex: 4.5,
             fontSize: 17,
             fontWeight: "bold",
             color: "#3B4049",
@@ -86,34 +77,6 @@ const CoinDetails = ({ text, value }) => (
     </Text>
   </View>
 );
-
-//For ease when working
-export const userSample = {
-  fullName: "Brian Ntanga",
-  mitid: 6667788,
-  kerberos: "bntanga",
-  giveBalance: 5000,
-  amountGiven: 20,
-  receiveBalance: 50,
-  votedCharities: [
-    "My very long name charity Which is going to overflow",
-    "Africa music",
-    "Another charity",
-  ],
-  selectedCharity: "On the Rise",
-  distinctSends: { kerbs: ["bntanga"], number: 4 },
-  distinctReceives: { kerbs: ["ifyt"], number: 6 },
-  sendHistory: [],
-  receiveHistory: [
-    {
-      date: 66060505070708808008909090909090900990,
-      amount: 10,
-      tofrom: "bouth",
-      comment: "Because i WANT",
-      name: "Bint Outhman",
-    },
-  ],
-};
 
 export default class Send extends React.Component {
   static contextType = UserContext;
@@ -144,25 +107,17 @@ export default class Send extends React.Component {
         ),
     }),
     showSpinner: false,
-    //another hacky solution to life because kerb validation is done on backend
+    //another hacky solution because kerb validation is done on backend
     kerbError: "",
   };
 
-  // validationSchema = yup.object().shape({
-  //   amount: yup
-  //     .number()
-  //     .typeError("Amount must be a number")
-  //     .min(1, "Invalid Amount!")
-  //     .max(parseInt(this.context.user.giveBalance), "Not enough coins")
-  //     .required("Required!"),
-  //   receiverKerberos: yup.string().required("Required!"),
-  // });
-
   dismissList = () => {
+    //for removing the dropdown view
     this.setState({ showDropdown: false });
   };
 
   modal_function = () => {
+    //This determines when to show the modal
     if (this.context.voting_closed) {
       if (this.context.user.selectedCharity === "") {
         return this.modal();
@@ -174,6 +129,7 @@ export default class Send extends React.Component {
     }
   };
   modal = () => {
+    //called by modal function to display stuff about voting and selected charity
     let intro_text = this.context.voting_closed
       ? "Select a charity!"
       : "Vote for a charity!";
@@ -272,9 +228,8 @@ export default class Send extends React.Component {
   };
 
   voteOnWebsite = async () => {
-    // let result = await WebBrowser.openBrowserAsync(
-    //   WEB_URL + "votecharity/" + sample_user.mitid
-    // );
+    //Voting for a charity on the website
+
     let select_url = this.context.voting_closed
       ? WEB_URL + "selectcharity/" + this.context.user.mitid
       : WEB_URL + "votecharity/" + this.context.user.mitid;
@@ -284,11 +239,13 @@ export default class Send extends React.Component {
   };
 
   fetch_data = async (kerb_or_name) => {
-    //Too little data to search through
+    //Fetches peoples kerbs and names that match the given search string
+    if (kerb_or_name === "") {
+      return;
+    }
 
     this.setState({ showSpinner: true });
 
-    time1 = Date.now();
     let response, responseJSON;
     try {
       response = await fetch(
@@ -302,56 +259,26 @@ export default class Send extends React.Component {
     } catch (e) {
       console.error(e);
       console.log("failed to fetch data from people api");
+      this.setState({ showSpinner: false });
       return;
     }
 
-    time2 = Date.now();
-    console.log("time fetching", time2 - time1);
+    if (responseJSON.error) {
+      this.setState({
+        showSpinner: false,
+      });
+
+      return false;
+    }
 
     this.setState({
       searchResults: responseJSON.users,
-      rerender: false,
       showSpinner: false,
-      // showDropdown: true,
     });
-    time3 = Date.now();
-  };
-
-  init_socket = async () => {
-    const socket = io(WEB_URL);
-    socket.on("connect", async () => {
-      this.context.updateSocketObject(socket);
-    });
-  };
-
-  init_socket_part_2 = async () => {
-    let token;
-    try {
-      token = await SecureStore.getItemAsync("refreshToken");
-    } catch (e) {
-      console.error(e);
-      console.log("failed to get token");
-    }
-    let body = JSON.stringify({
-      socketid: this.context.socket_object.id,
-      kerberos: this.context.user.kerberos,
-    });
-
-    let response, responseJSON;
-    try {
-      response = await fetch(`${WEB_URL}api/initsocket`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: token },
-        body: body,
-      });
-      responseJSON = await response.json();
-    } catch (e) {
-      console.error(e);
-      console.log("could not init socket");
-    }
   };
 
   handlePress = async (values, actions) => {
+    //function called to submit coins
     this.setState({ showSpinner: true });
 
     let body = JSON.stringify({
@@ -387,14 +314,14 @@ export default class Send extends React.Component {
     }
 
     if (responseJSON.kerbError) {
-      //do something
-
+      //Checking if the kerb is invalid is done on the server. It returns a kerb
+      //error if the kerb is invalid
       this.setState({ showSpinner: false, kerbError: "Invalid Kerberos" });
 
       return;
     }
 
-    this.context.updateUser(responseJSON);
+    await this.context.updateUser(responseJSON);
     try {
       await actions.setSubmitting(false);
       await actions.resetForm();
@@ -405,7 +332,8 @@ export default class Send extends React.Component {
 
     this.refs.toast.show("Coins sent successfully!", DURATION.LENGTH_LONG);
 
-    //Hacky solution to fix this.context not updating
+    //Hacky solution. The validation schema needs to be updated again with the new user send coins balance.
+    //The old one still has old data hence the need for the new update. This code duplicates what is in this.state.validationSchema
     let newValidationSchema = yup.object().shape({
       amount: yup
         .number()
@@ -430,15 +358,10 @@ export default class Send extends React.Component {
   };
 
   componentDidMount() {
-    // this.init_socket();
-    // setTimeout(this.init_socket_part_2, 5000);
     registerForPushNotificationsAsync(this.context.user.kerberos);
-    // this.test_notifications();
   }
   render() {
-    let scrollDabs = !this.state.showDropdown;
     const user = this.context.user;
-    // const user = userSample;
 
     let border = (
       <View
@@ -512,25 +435,42 @@ export default class Send extends React.Component {
                   </Text>
 
                   {border}
+
                   <View
                     style={{
                       width: "100%",
-                      marginTop: 12,
-                      marginBottom: 12,
-                      marginLeft: 8,
+                      flexDirection: "row",
+                      alignItems: "center",
                     }}
                   >
-                    <CoinDetails
-                      text="Coins you can give"
-                      value={`${user.giveBalance} MITCoins`}
-                    />
+                    <View
+                      style={{
+                        marginTop: 12,
+                        marginBottom: 12,
+                        marginLeft: 8,
+                        flex: 2,
+                      }}
+                    >
+                      <CoinDetails
+                        text="Coins you can give"
+                        value={`${user.giveBalance} MITCoins`}
+                      />
 
-                    <CoinDetails
-                      text="Coins you've received"
-                      value={`${user.receiveBalance} MITCoins`}
+                      <CoinDetails
+                        text="Coins you've received"
+                        value={`${user.receiveBalance} MITCoins`}
+                      />
+                    </View>
+                    <Image
+                      source={CoinsIcon}
+                      style={{
+                        height: 65,
+                        width: 65,
+                      }}
                     />
                   </View>
                 </View>
+
                 {border}
 
                 <Text
@@ -546,7 +486,7 @@ export default class Send extends React.Component {
                   Send Coins
                   {custom_hash}
                 </Text>
-                {/* {this.state.showSpinner ? <Spinner color="red" /> : null} */}
+
                 <Spinner
                   visible={this.state.showSpinner}
                   size="large"
@@ -576,6 +516,7 @@ export default class Send extends React.Component {
                             paddingTop: 4,
                           }}
                         >
+                          {/* this.state.kerbError comes from server validation */}
                           <Label style={{ color: "red" }}>
                             {formikProps.errors.receiverKerberos &&
                             formikProps.touched.receiverKerberos
@@ -603,23 +544,22 @@ export default class Send extends React.Component {
                           />
                           <TouchableOpacity
                             style={{
-                              // backgroundColor: "green",
-                              // color: "#982B39",
                               borderWidth: 2,
-                              // height: "100%",
                               flexDirection: "row",
                               alignItems: "center",
                               padding: 8,
                               borderRadius: 16,
                               borderColor: "#982B39",
-                              // justifyContent: "center",
                             }}
                             onPress={async () => {
+                              if (formikProps.values.receiverKerberos === "") {
+                                return;
+                              }
                               await this.fetch_data(
                                 formikProps.values.receiverKerberos
                               ).catch((error) => {
-                                console.error(e);
-                                console.log("error fetchin data again");
+                                console.error(error);
+                                console.log("error fetching data again");
                               });
 
                               this.setState({ showDropdown: true });
@@ -683,9 +623,7 @@ export default class Send extends React.Component {
                                       formikProps.values.receiverKerberos =
                                         item.kerb;
 
-                                      //this is to reload the input value withoout making another network request
                                       this.setState({
-                                        rerender: false,
                                         showDropdown: false,
                                         sendingToName: item.name,
                                       });
@@ -714,7 +652,6 @@ export default class Send extends React.Component {
                         ) : null}
 
                         <Item
-                          // stackedLabel
                           style={{
                             borderColor: "red",
                             borderTopWidth: 1,
@@ -783,7 +720,6 @@ export default class Send extends React.Component {
             </DismissKeyboard>
           </ScrollView>
           {this.modal_function()}
-          {/* {this.modal()} */}
         </View>
       </View>
     );
@@ -809,7 +745,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
-    // alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -828,10 +763,8 @@ const styles = StyleSheet.create({
   textStyle: {
     color: "white",
     fontWeight: "bold",
-    // textAlign: "center",
   },
   modalText: {
     marginBottom: 15,
-    // textAlign: "center",
   },
 });

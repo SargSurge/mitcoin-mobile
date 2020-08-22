@@ -1,7 +1,6 @@
 import React from "react";
 import { Left, Button, Icon } from "native-base";
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import Hamburger from "./hamburger";
 
 export default class Bar extends React.Component {

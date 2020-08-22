@@ -32,7 +32,6 @@ export class UserProvider extends React.Component {
   state = {
     user: {},
     voting_closed: true,
-    initial_login: false,
     socket_object: null,
   };
 
@@ -41,9 +40,6 @@ export class UserProvider extends React.Component {
   };
   updateVotingStatus = (status) => {
     this.setState({ voting_closed: status });
-  };
-  updateInitialLogin = (status) => {
-    this.setState({ initial_login: status });
   };
 
   updateSocketObject = (socket) => {
@@ -59,8 +55,6 @@ export class UserProvider extends React.Component {
           updateUser: this.updateUser,
           voting_closed: this.state.voting_closed,
           updateVotingStatus: this.updateVotingStatus,
-          initial_login: this.state.initial_login,
-          updateInitialLogin: this.updateInitialLogin,
           socket_object: this.state.socket_object,
           updateSocketObject: this.updateSocketObject,
         }}

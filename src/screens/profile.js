@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  ScrollView,
-} from "react-native";
+import { View, TouchableOpacity, Text, ScrollView } from "react-native";
 
 import { UserContext } from "../UserContext.js";
 import Header from "./header.js";
@@ -16,33 +10,10 @@ import VotedCharities from "./votedCharities.js";
 import SelectedCharityView from "./selectedCharityView.js";
 import * as SecureStore from "expo-secure-store";
 
-let sample_user = {
-  mitid: 924392664,
-  kerberos: "bntanga",
-  giveBalance: 743,
-  receiveBalance: 21,
-  charity: "onTheRise",
-  transactionHistory: [],
-};
-
-let sample_user_modified = {
-  mitid: 924392664,
-  kerberos: "bntanga",
-  giveBalance: 743,
-  receiveBalance: 21,
-  selectedCharity: "On The Rise",
-  transactionHistory: [],
-
-  fullName: "Brian Ntanga",
-  distinct_people_given: 5,
-  coinsGiven: 4,
-  distinct_people_rec: 2,
-};
-
 export default class Profile extends React.Component {
   static contextType = UserContext;
 
-  state = { testtext: "Fake words" };
+  state = {};
 
   logout = async () => {
     try {
@@ -56,21 +27,17 @@ export default class Profile extends React.Component {
     this.props.navigation.navigate("Login");
   };
 
-  componentDidMount() {
-    // this.init_socket_part_2();
-  }
+  componentDidMount() {}
 
   render() {
     const user = this.context.user;
 
-    // const user = userSample;
     let custom_num = (num) => (
       <Text
         style={{
           ...Fonts.regular_text,
           ...Platform.select({
             ios: {
-              // fontFamily: "Georgia",
               fontWeight: "500",
               fontSize: 18,
             },
@@ -142,7 +109,7 @@ export default class Profile extends React.Component {
               alignSelf: "flex-start",
               marginBottom: 4,
               ...Fonts.regular_text,
-              // fontWeight: "400",
+
               fontSize: 15,
               marginLeft: 16,
             }}
@@ -150,31 +117,20 @@ export default class Profile extends React.Component {
             You have received {custom_num(user.receiveBalance)} MITCoins from{" "}
             {custom_num(user.distinctReceives.number)}{" "}
             {user.distinctReceives.number === 1 ? "person" : "different people"}
-            .{/* change kerberos to actual ID */}
+            .
           </Text>
 
-          {
-            this.context.voting_closed ? (
-              <SelectedCharityView
-                selected_charity={user.selectedCharity}
-                mitid={user.mitid}
-              />
-            ) : (
-              // <VotedCharities
-              //   charities={user.votedCharities}
-              //   mitid={user.mitid}
-              // />
-              <SelectedCharityView
-                selected_charity={user.selectedCharity}
-                mitid={user.mitid}
-              />
-            )
-            //   <VotedCharities
-            //     charities={user.votedCharities}
-            //     mitid={user.mitid}
-            //   />
-            // )
-          }
+          {this.context.voting_closed ? (
+            <SelectedCharityView
+              selected_charity={user.selectedCharity}
+              mitid={user.mitid}
+            />
+          ) : (
+            <VotedCharities
+              charities={user.votedCharities}
+              mitid={user.mitid}
+            />
+          )}
 
           {border}
 
@@ -212,22 +168,3 @@ export default class Profile extends React.Component {
     );
   }
 }
-
-let styles = StyleSheet.create({
-  card: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 35,
-    shadowColor: "#000",
-    color: "#982B39",
-    borderWidth: 0.5,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-});

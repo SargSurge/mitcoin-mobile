@@ -1,40 +1,39 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Image } from "react-native";
 import Fonts from "./fonts.js";
 import * as WebBrowser from "expo-web-browser";
 import { WEB_URL } from "../config.js";
 import * as Linking from "expo-linking";
+import CharityIcon from "../../assets/images/CharityIcon.png";
 
 export default class SelectedCharityView extends React.Component {
   state = { charity_name: "", charity_link: "" };
 
   fetch_links = async () => {
+    //fetches names and links to charity websites
     let body = JSON.stringify({
       charities: [this.props.selected_charity],
     });
     let response;
-    try{response = await fetch(WEB_URL + "api/get_charity_links", {
+    try {
+      response = await fetch(WEB_URL + "api/get_charity_links", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: body,
-    });}
-    catch(error){
-        console.error(error)
-        console.log("error fetching links")
-        return
-
+      });
+    } catch (error) {
+      console.error(error);
+      console.log("error fetching links");
+      return;
     }
     let responseJSON;
-    try{
-        responseJSON = await response.json();
-
+    try {
+      responseJSON = await response.json();
+    } catch (error) {
+      console.error(error);
+      console.log("failed to convert to json");
+      return;
     }
-    catch(error){
-        console.error(error)
-        console.log("failed to convert to json")
-        return
-    }
-
 
     this.setState({
       charity_name: responseJSON[0].charity,
@@ -42,25 +41,22 @@ export default class SelectedCharityView extends React.Component {
     });
   };
   visitWebsite = async () => {
-      try{  let result = await WebBrowser.openBrowserAsync(this.state.charity_link);}
-      catch (e) {
-          console.error(e)
-          console.log("cannot visit website")
-      }
-
+    try {
+      let result = await WebBrowser.openBrowserAsync(this.state.charity_link);
+    } catch (e) {
+      console.error(e);
+      console.log("cannot visit website");
+    }
   };
   selectCharityOnWebsite = async () => {
-      try{result = await Linking.openURL(
-          WEB_URL + "selectcharity/" + this.props.mitid
-      );}
-      catch (e) {
-          console.error(e)
-          console.log("cannot visit website")
-      }
-
-    //rerendering to refresh results
-    // this is not working, find other solution
-    this.setState({});
+    try {
+      result = await Linking.openURL(
+        WEB_URL + "selectcharity/" + this.props.mitid
+      );
+    } catch (e) {
+      console.error(e);
+      console.log("cannot visit website");
+    }
   };
 
   componentDidMount() {
@@ -175,20 +171,28 @@ export default class SelectedCharityView extends React.Component {
           borderTopWidth: 0.5,
         }}
       >
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "column",
+            alignItems: "center",
+            marginTop: 16,
+          }}
+        >
+          <Image source={CharityIcon} style={{ width: 80, height: 80 }} />
+        </View>
         <Text
           style={{
             alignSelf: "center",
             ...Fonts.regular_text,
-            //   fontWeight: "500",
-            marginTop: 24,
+
+            marginTop: 8,
             fontSize: 18,
           }}
         >
-          {/* {this.props.selected_charity === ""
-            ? null
-            : "The charity you selected is: "} */}
           Your charity of choice is:
         </Text>
+
         <View style={{ ...styles.card, marginBottom: 40 }}>
           {this.props.selected_charity === "" ? (
             <Text

@@ -6,8 +6,8 @@ import * as Notifications from "expo-notifications";
 import Background from "./imageBackground.js";
 import AnimatedLoader from "react-native-animated-loader";
 import { WEB_URL } from "../config.js";
-import { Spinner } from "native-base";
 
+//See expo notifications documentation
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -20,7 +20,7 @@ export default class CheckToken extends React.Component {
   static contextType = UserContext;
   componentDidMount = async () => {
     // Check if there is a token stored to skip logging in
-    let time1 = Date.now();
+
     let token;
     try {
       token = await SecureStore.getItemAsync("refreshToken");
@@ -30,8 +30,6 @@ export default class CheckToken extends React.Component {
       this.props.navigation.navigate("Login");
       return;
     }
-    time2 = Date.now();
-    console.log("this is time for secure store", time2 - time1);
 
     if (!token) {
       this.props.navigation.navigate("Login");
@@ -44,13 +42,7 @@ export default class CheckToken extends React.Component {
           Authorization: token,
         },
       };
-      time3 = Date.now();
-      // This is to prevent excessive loading
-      // setTimeout(() => {
-      //   console.log("timeout limit reached");
-      //   this.props.navigation.navigate("Login");
-      //   return;
-      // }, 20000);
+
       let response, responseJSON;
       try {
         response = await fetch(WEB_URL + "auth/verify", options);
@@ -64,18 +56,13 @@ export default class CheckToken extends React.Component {
         this.context.updateUser(responseJSON.user);
         this.context.updateVotingStatus(responseJSON.is_voting_closed);
         this.props.navigation.navigate("Send");
-        let time4 = Date.now();
-        console.log("this is time for API request", time4 - time3);
+
         return;
       } else {
-        let time4 = Date.now();
-        console.log("this is time for API request", time4 - time3);
         this.props.navigation.navigate("Login");
         return;
       }
     } catch (err) {
-      time4 = Date.now();
-      console.log("this is time for API request", time4 - time3);
       this.props.navigation.navigate("Login");
       return;
     }
@@ -112,8 +99,6 @@ export default class CheckToken extends React.Component {
           animationStyle={{ width: 200, height: 200, marginTop: 30 }}
           speed={1}
         />
-
-        {/* <Spinner color="red" /> */}
       </View>
     );
   }

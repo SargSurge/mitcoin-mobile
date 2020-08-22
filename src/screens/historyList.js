@@ -1,6 +1,5 @@
 import React from "react";
 import { View, StyleSheet, FlatList, Text } from "react-native";
-import {} from "native-base";
 import moment from "moment";
 import Fonts from "./fonts.js";
 import Background from "./imageBackground.js";
@@ -38,7 +37,6 @@ let SingleField = ({ text, value }) => (
   </View>
 );
 let HistoryCard = ({ date, toFrom, amount, comment, contextText, name }) => {
-  // Change toFrom to be actual name of person
   let date_text = contextText === "sendHistory" ? "Date Sent" : "Date Received";
   let name_text = contextText === "sendHistory" ? "Receiver" : "Sender";
   return (
@@ -50,77 +48,49 @@ let HistoryCard = ({ date, toFrom, amount, comment, contextText, name }) => {
     </View>
   );
 };
-const schemaDefinition = {
-  fullName: String,
-  mitid: String,
-  kerberos: String,
-  giveBalance: { type: Number, default: 1000 },
-  amountGiven: { type: Number, default: 0 },
-  receiveBalance: { type: Number, default: 0 },
-  votedCharity: { type: String, default: "" },
-  selectedCharity: { type: String, default: "" },
-  distinctSends: { kerbs: [String], number: Number },
-  distinctReceives: { kerbs: [String], number: Number },
-  sendHistory: [
-    {
-      date: Date,
-      amount: Number,
-      tofrom: String,
-      comment: String,
-      name: String,
-    },
-  ],
-  receiveHistory: [
-    {
-      date: Date,
-      amount: Number,
-      tofrom: String,
-      comment: String,
-      name: String,
-    },
-  ],
-};
 
-export default HistoryList = ({ actualHistory, contextText }) => (
-  <View style={{ height: "100%", width: "100%" }}>
-    <Background />
-    {actualHistory.length !== 0 ? (
-      <FlatList
-        data={actualHistory.reverse()}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => {
-          return (
-            <HistoryCard
-              // date={moment(item.date).format("MM-DD-YYYY")}
-              date={moment(item.date).format("MMMM Do YYYY, h:mm a")}
-              toFrom={item.tofrom}
-              amount={item.amount}
-              comment={item.comment}
-              contextText={contextText}
-              name={item.name}
-            />
-          );
-        }}
-      />
-    ) : (
-      <Text
-        style={{
-          marginTop: 30,
-          // flex: 1,
-          alignSelf: "center",
-          ...Fonts.regular_text,
-          fontSize: 18,
-          textAlign: "center",
-          height: "100%",
-        }}
-      >
-        {contextText === "sendHistory"
-          ? "Looks like you haven't sent any coins yet."
-          : "Looks like you haven't received any coins yet"}
-      </Text>
-    )}
-  </View>
-);
+export default HistoryList = ({ actualHistory, contextText }) => {
+  //This is to avoid mutating the history array. Mutating it causes a bug when reversing the array
+  actualHistory = [...actualHistory];
+  return (
+    <View style={{ height: "100%", width: "100%" }}>
+      <Background />
+      {actualHistory.length !== 0 ? (
+        <FlatList
+          data={actualHistory.reverse()}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => {
+            return (
+              <HistoryCard
+                date={moment(item.date).format("MMMM Do YYYY, h:mm a")}
+                toFrom={item.tofrom}
+                amount={item.amount}
+                comment={item.comment}
+                contextText={contextText}
+                name={item.name}
+              />
+            );
+          }}
+        />
+      ) : (
+        <Text
+          style={{
+            marginTop: 30,
+            alignSelf: "center",
+            ...Fonts.regular_text,
+            fontSize: 18,
+            textAlign: "center",
+            height: "100%",
+          }}
+        >
+          {contextText === "sendHistory"
+            ? "Looks like you haven't sent any coins yet."
+            : "Looks like you haven't received any coins yet"}
+        </Text>
+      )}
+    </View>
+  );
+};
 
 let styles = StyleSheet.create({
   card: {

@@ -6,6 +6,7 @@ import { Text, View, Platform, Button } from "react-native";
 import { WEB_URL } from "../config.js";
 import * as SecureStore from "expo-secure-store";
 
+//This component is not rendered. It is just used to test if notifications are working
 export default function NotificationTest() {
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
@@ -18,10 +19,6 @@ export default function NotificationTest() {
       setNotification(notification);
     });
     Notifications.addNotificationResponseReceivedListener((response) => {});
-
-    // return () => {
-    //   Notifications.removeAllNotificationListeners();
-    // };
   });
 
   return (
@@ -54,6 +51,7 @@ export default function NotificationTest() {
   );
 }
 
+//function not used in app. Just used to test if notifications work
 async function sendPushNotification(expoPushToken) {
   const message = {
     to: expoPushToken,
@@ -73,18 +71,11 @@ async function sendPushNotification(expoPushToken) {
     body: JSON.stringify(message),
   });
 }
-// Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
 
+//this is used to register for notifications
+//function copied from expo documentation. see: https://docs.expo.io/versions/latest/sdk/notifications/
+//Made a few modifications to frequently ask for permissions
 async function registerForPushNotificationsAsync(kerberos) {
-  //   let token = await fetch(
-  //     `${WEB_URL}api/get_notification_token?kerberos=kerberos`
-  //   );
-  //   let tokenJSON = await token.json();
-  //   if (tokenJSON.notificationToken !== "") {
-
-  //     return tokenJSON.notificationToken;
-  //   }
-
   let token;
   if (Constants.isDevice) {
     const { status: existingStatus } = await Permissions.getAsync(
@@ -129,7 +120,6 @@ async function registerForPushNotificationsAsync(kerberos) {
     }
 
     if (tokenCheck !== null) {
-      console.log("this is stored token Check", tokenCheck);
       // await SecureStore.deleteItemAsync("notificationToken");
       // tokenCheck = (await Notifications.getExpoPushTokenAsync()).data;
       request_and_set_new_expo_token(tokenCheck, kerberos);
@@ -142,7 +132,6 @@ async function registerForPushNotificationsAsync(kerberos) {
         });
       }
       //   tokenCheck = (await Notifications.getExpoPushTokenAsync()).data;
-
       //   request_and_set_new_expo_token(tokenCheck, kerberos);
       return tokenCheck;
     }
@@ -169,11 +158,10 @@ async function registerForPushNotificationsAsync(kerberos) {
   request_and_set_new_expo_token(token, kerberos);
 }
 
+//this function sends the newly retrieved expo token to the server.
 async function request_and_set_new_expo_token(token, kerberos) {
-  console.log("this is token being received", token);
   let body = JSON.stringify({
     notificationToken: token,
-    // kerberos: contextObject.user.kerberos,
     kerberos: kerberos,
   });
   let authToken;

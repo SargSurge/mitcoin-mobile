@@ -8,10 +8,8 @@ import Background from "./imageBackground.js";
 export default class History extends React.Component {
   static contextType = UserContext;
 
-  componentDidMount() {}
   render() {
     const user = this.context.user;
-    // const user = userSample;
     return (
       <Container>
         <Background />

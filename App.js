@@ -5,21 +5,23 @@ import io from "socket.io-client";
 import * as SecureStore from "expo-secure-store";
 import { WEB_URL } from "./src/config.js";
 
-//Hacky solution to do init socket from here
 class App2 extends React.Component {
   static contextType = UserContext;
 
   init_socket = async () => {
+    //gets socket from server
     const socket = io(WEB_URL);
     socket.on("connect", async () => {
       this.context.updateSocketObject(socket);
-      //why does this work?
+      //this does not work. IDK why
       // await this.init_socket_part_2();
+      //why does this work instead? I don't know
       setTimeout(this.init_socket_part_2, 3000);
     });
   };
 
   init_socket_part_2 = async () => {
+    //Stores socket object on server
     let token;
     try {
       token = await SecureStore.getItemAsync("refreshToken");
@@ -49,9 +51,11 @@ class App2 extends React.Component {
   };
 
   everythingSocketOn = () => {
+    //Adds all the socket listeners needed in the app
     this.context.socket_object.on("charity_selected", (charity) => {
       this.context.user.selectedCharity = charity;
       let newUser = this.context.user;
+      //forcefully updating so that changes are propagated in the app
       this.context.updateUser(newUser);
     });
 
@@ -60,8 +64,6 @@ class App2 extends React.Component {
 
       let newUser = this.context.user;
       this.context.updateUser(newUser);
-
-      // this.context.updateUser(this.context.user);
     });
 
     this.context.socket_object.on(
@@ -78,9 +80,6 @@ class App2 extends React.Component {
 
   async componentDidMount() {
     this.init_socket();
-
-    // setTimeout(this.init_socket_part_2, 3000);
-    // this.everythingSocketOn();
   }
 
   render() {
@@ -88,6 +87,7 @@ class App2 extends React.Component {
   }
 }
 
+//This is so that the above component can access user context
 export default class App extends React.Component {
   render() {
     return (

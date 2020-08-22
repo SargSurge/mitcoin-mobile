@@ -11,7 +11,7 @@ export default hamburger = (props) => {
         backgroundColor: "white",
         borderRadius: 4,
       }}
-    ></View>
+    />
   );
 
   return (

@@ -54,16 +54,19 @@ export default class TheTeam extends React.Component {
         <Text style={styles.email}>bntanga@mit.edu</Text>
       </View>
     );
-    return (
-      <Content style={styles.container}>
-        <AboutCard title="W. Craig Carter" body={craig_body} />
-        <AboutCard title="Mary Beth Wagner" body={mary_body} />
-        <AboutCard title="Maisie O'Brien" body={maisie_body} />
-        <AboutCard title="Issac Redlon" body={issac_body} />
-        <AboutCard title="Timmy Xiao" body={timmy_body} />
-        <AboutCard title="Brian Ntanga" body={brian_body} />
-      </Content>
-    );
+
+    let teamMembers = [
+      <AboutCard title="W. Craig Carter" body={craig_body} key="craig" />,
+      <AboutCard title="Mary Beth Wagner" body={mary_body} key="marybeth" />,
+      <AboutCard title="Maisie O'Brien" body={maisie_body} key="maisie" />,
+      <AboutCard title="Issac Redlon" body={issac_body} key="issac" />,
+      <AboutCard title="Timmy Xiao" body={timmy_body} key="timmy" />,
+      <AboutCard title="Brian Ntanga" body={brian_body} key="brian" />,
+    ];
+
+    teamMembers.sort(() => Math.random() - 0.5);
+
+    return <Content style={styles.container}>{teamMembers}</Content>;
   }
 }
 

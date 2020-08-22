@@ -1,13 +1,11 @@
 import React from "react";
 import { Header, Body, Title, Right } from "native-base";
 import Bar from "./bar.js";
-import { Ionicons } from "@expo/vector-icons";
 
 export default HeaderFunction = ({ navigation, title }) => {
   return (
     <Header
       style={{ backgroundColor: "#982B39" }}
-      // androidStatusBarColor="#8F3C44"
       androidStatusBarColor="#982B39"
       iosBarStyle="light-content"
     >

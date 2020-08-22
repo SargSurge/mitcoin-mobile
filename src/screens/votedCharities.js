@@ -1,9 +1,10 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Image } from "react-native";
 import Fonts from "./fonts.js";
 import { WEB_URL } from "../config.js";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
+import CharityIcon from "../../assets/images/CharityIcon.png";
 
 NoCharitySelectedView = () => (
   <View style={{ width: "100%" }}>
@@ -24,9 +25,6 @@ NoCharitySelectedView = () => (
           fontWeight: "400",
           width: "100%",
           textAlign: "center",
-          // flex: 1,
-
-          // color: "#982B39",
         }}
       >
         You have not voted for any charity
@@ -39,13 +37,12 @@ NoCharitySelectedView = () => (
 );
 CharityAndLink = ({ charity_name, charity_link }) => {
   visitWebsite = async () => {
-      try{let result = await WebBrowser.openBrowserAsync(charity_link);}
-      catch (e) {
-          console.error(e)
-          console.log("error visiting site")
-
-      }
-
+    try {
+      let result = await WebBrowser.openBrowserAsync(charity_link);
+    } catch (e) {
+      console.error(e);
+      console.log("error visiting site");
+    }
   };
   return (
     <View style={{ width: "100%" }}>
@@ -80,7 +77,6 @@ CharityAndLink = ({ charity_name, charity_link }) => {
             paddingTop: 4,
             color: "blue",
             height: "100%",
-            // textAlignVertical: "bottom",
             textAlign: "center",
             flex: 2,
           }}
@@ -99,38 +95,29 @@ export default class VotedCharities extends React.Component {
   state = { charities_with_links: [] };
 
   fetch_links = async () => {
+    //Fetches lists of all charities and links to website
     let body = JSON.stringify({
       charities: this.props.charities,
     });
 
-
     let response, responseJSON;
-    try{
-        response = await fetch(WEB_URL + "api/get_charity_links", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: body,
-        });
-        responseJSON = await response.json();
-
+    try {
+      response = await fetch(WEB_URL + "api/get_charity_links", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: body,
+      });
+      responseJSON = await response.json();
+    } catch (e) {
+      console.error(e);
+      console.log("error fetching charity links");
     }
-catch (e) {
-
-        console.error(e);
-        console.log("error fetching charity links")
-}
 
     this.setState({ charities_with_links: responseJSON });
   };
 
   voteOnWebsite = async () => {
-    // let result = await WebBrowser.openBrowserAsync(
-    //   WEB_URL + "votecharity/" + this.props.mitid
-    // );
     Linking.openURL(WEB_URL + "votecharity/" + this.props.mitid);
-    //rerendering to refresh results
-    // this is not working, find other solution
-    this.setState({});
   };
   componentDidMount() {
     this.fetch_links();
@@ -169,11 +156,20 @@ catch (e) {
           borderTopWidth: 0.5,
         }}
       >
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "column",
+            alignItems: "center",
+            marginTop: 16,
+          }}
+        >
+          <Image source={CharityIcon} style={{ width: 80, height: 80 }} />
+        </View>
         <Text
           style={{
             alignSelf: "center",
             ...Fonts.regular_text,
-            //   fontWeight: "500",
             marginTop: 24,
             fontSize: 18,
           }}
