@@ -59,7 +59,7 @@ export default class TheTeam extends React.Component {
       <AboutCard title="W. Craig Carter" body={craig_body} key="craig" />,
       <AboutCard title="Mary Beth Wagner" body={mary_body} key="marybeth" />,
       <AboutCard title="Maisie O'Brien" body={maisie_body} key="maisie" />,
-      <AboutCard title="Issac Redlon" body={issac_body} key="issac" />,
+      <AboutCard title="Isaac Redlon" body={issac_body} key="isaac" />,
       <AboutCard title="Timmy Xiao" body={timmy_body} key="timmy" />,
       <AboutCard title="Brian Ntanga" body={brian_body} key="brian" />,
     ];
