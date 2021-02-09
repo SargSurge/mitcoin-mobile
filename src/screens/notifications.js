@@ -3,8 +3,8 @@ import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import React, { useState, useEffect, useContext } from "react";
 import { Text, View, Platform, Button } from "react-native";
-import { WEB_URL } from "../config.js";
 import * as SecureStore from "expo-secure-store";
+import API from "../api-client";
 
 //This component is not rendered. It is just used to test if notifications are working
 export default function NotificationTest() {
@@ -108,7 +108,6 @@ async function registerForPushNotificationsAsync(kerberos) {
       }
     }
     if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
       return;
     }
     let tokenCheck;
@@ -143,7 +142,8 @@ async function registerForPushNotificationsAsync(kerberos) {
       return;
     }
   } else {
-    alert("Must use physical device for Push Notifications");
+    console.log("Must use physical device for Push Notifications");
+    return;
   }
 
   if (Platform.OS === "android") {
@@ -160,43 +160,27 @@ async function registerForPushNotificationsAsync(kerberos) {
 
 //this function sends the newly retrieved expo token to the server.
 async function request_and_set_new_expo_token(token, kerberos) {
-  let body = JSON.stringify({
-    notificationToken: token,
-    kerberos: kerberos,
-  });
-  let authToken;
-  try {
-    authToken = await SecureStore.getItemAsync("refreshToken");
-  } catch (e) {
-    console.error(e);
-    console.log("failed getting auth token");
-    return;
-  }
+  if ( token ) {
+    var sessionData = await SecureStore.getItemAsync("session");
+    var session = JSON.parse(sessionData);
 
-  let response, responseJSON;
-  try {
-    response = await fetch(`${WEB_URL}api/set_notification_token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: authToken },
-      body: body,
-    });
-    responseJSON = await response.json();
-  } catch (e) {
-    console.error(e);
-    console.log("couldnt set notification token");
-  }
-
-  try {
-    await SecureStore.setItemAsync(
-      "notificationToken",
-      responseJSON.user.notificationToken[0]
+    var response = await fetch(
+      API.path("/profile/notification_tokens"),
+      {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.token}`
+        },
+        body: JSON.stringify({ _method: "PUT", token: token })
+      }
     );
-  } catch (e) {
-    console.error(e);
-    console.log("could not save token to secure store");
-  }
 
-  return responseJSON.user.notificationToken[0];
+    if ( response.status !== 204 ) {
+      await SecureStore.setItemAsync("notificationToken", token);
+    }
+  }
 }
 
 export { registerForPushNotificationsAsync };

@@ -2,75 +2,28 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity, Text, Image } from "react-native";
 import Fonts from "./fonts.js";
 import * as WebBrowser from "expo-web-browser";
-import { WEB_URL } from "../config.js";
 import * as Linking from "expo-linking";
 import CharityIcon from "../../assets/images/CharityIcon.png";
+import { UserContext } from "../UserContext";
 
 export default class SelectedCharityView extends React.Component {
-  state = { charity_name: "", charity_link: "" };
+  static contextType = UserContext;
 
-  fetch_links = async () => {
-    //fetches names and links to charity websites
-    let body = JSON.stringify({
-      charities: [this.props.selected_charity],
-    });
-    let response;
-    try {
-      response = await fetch(WEB_URL + "api/get_charity_links", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: body,
-      });
-    } catch (error) {
-      console.error(error);
-      console.log("error fetching links");
-      return;
-    }
-    let responseJSON;
-    try {
-      responseJSON = await response.json();
-    } catch (error) {
-      console.error(error);
-      console.log("failed to convert to json");
-      return;
-    }
-
-    this.setState({
-      charity_name: responseJSON[0].charity,
-      charity_link: responseJSON[0].link,
-    });
-  };
   visitWebsite = async () => {
     try {
-      let result = await WebBrowser.openBrowserAsync(this.state.charity_link);
+      let result = await WebBrowser.openBrowserAsync(this.props.charity.url);
     } catch (e) {
       console.error(e);
       console.log("cannot visit website");
     }
   };
+
   selectCharityOnWebsite = async () => {
-    try {
-      result = await Linking.openURL(
-        WEB_URL + "selectcharity/" + this.props.mitid
-      );
-    } catch (e) {
-      console.error(e);
-      console.log("cannot visit website");
-    }
+    var url = await this.context.createSignInURL();
+    var returnUrl = Linking.makeUrl("/profile")
+
+    await Linking.openURL(`${url}?app_url=${returnUrl}`);
   };
-
-  componentDidMount() {
-    if (this.props.selected_charity !== "") {
-      this.fetch_links();
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    // Typical usage (don't forget to compare props):
-    if (this.props.selected_charity !== prevProps.selected_charity) {
-      this.fetch_links();
-    }
-  }
 
   no_charity_present_button = (
     <View
@@ -194,7 +147,7 @@ export default class SelectedCharityView extends React.Component {
         </Text>
 
         <View style={{ ...styles.card, marginBottom: 40 }}>
-          {this.props.selected_charity === "" ? (
+          {this.props.charity === "" ? (
             <Text
               style={{
                 alignSelf: "center",
@@ -214,15 +167,15 @@ export default class SelectedCharityView extends React.Component {
                 alignSelf: "center",
                 ...Fonts.regular_text,
                 fontSize: 20,
-                fontWeight: this.props.selected_charity === "" ? "300" : "600",
+                fontWeight: this.props.charity === "" ? "300" : "600",
                 color: "#982B39",
               }}
             >
-              {this.state.charity_name}
+              {this.props.charity.name}
             </Text>
           )}
 
-          {this.props.selected_charity === ""
+          {this.props.charity === {}
             ? this.no_charity_present_button
             : this.charity_present_view}
         </View>

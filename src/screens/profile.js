@@ -6,9 +6,7 @@ import Header from "./header.js";
 import Background from "./imageBackground.js";
 import Fonts from "./fonts.js";
 
-import VotedCharities from "./votedCharities.js";
 import SelectedCharityView from "./selectedCharityView.js";
-import * as SecureStore from "expo-secure-store";
 
 export default class Profile extends React.Component {
   static contextType = UserContext;
@@ -16,13 +14,7 @@ export default class Profile extends React.Component {
   state = {};
 
   logout = async () => {
-    try {
-      await SecureStore.deleteItemAsync("refreshToken");
-      await SecureStore.deleteItemAsync("accessToken");
-    } catch (e) {
-      console.error(e);
-      console.log("failed to delete from secure store");
-    }
+    await this.context.signOut();
 
     this.props.navigation.navigate("Login");
   };
@@ -84,7 +76,7 @@ export default class Profile extends React.Component {
             }}
           >
             {" "}
-            Signed in as {user.fullName}
+            Signed in as {user.name.given}
           </Text>
 
           {border}
@@ -99,9 +91,9 @@ export default class Profile extends React.Component {
               marginLeft: 16,
             }}
           >
-            You have given {custom_num(user.amountGiven)} MITCoins to{" "}
-            {custom_num(user.distinctSends.number)}{" "}
-            {user.distinctSends.number === 1 ? "person" : "different people"}.
+            You have given {custom_num(user.activity.coins_sent)} MITCoins to{" "}
+            {custom_num(user.activity.recipient_count)}{" "}
+            {user.activity.recipient_count === 1 ? "person" : "different people"}.
           </Text>
 
           <Text
@@ -114,23 +106,13 @@ export default class Profile extends React.Component {
               marginLeft: 16,
             }}
           >
-            You have received {custom_num(user.receiveBalance)} MITCoins from{" "}
-            {custom_num(user.distinctReceives.number)}{" "}
-            {user.distinctReceives.number === 1 ? "person" : "different people"}
+            You have received {custom_num(user.activity.coins_received)} MITCoins from{" "}
+            {custom_num(user.activity.benefactor_count)}{" "}
+            {user.activity.benefactor_count === 1 ? "person" : "different people"}
             .
           </Text>
 
-          {this.context.voting_closed ? (
-            <SelectedCharityView
-              selected_charity={user.selectedCharity}
-              mitid={user.mitid}
-            />
-          ) : (
-            <VotedCharities
-              charities={user.votedCharities}
-              mitid={user.mitid}
-            />
-          )}
+          <SelectedCharityView charity={user.charity} />
 
           {border}
 

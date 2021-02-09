@@ -27,7 +27,13 @@
       "googleServicesFile": "./google-services.json",
       "versionCode": 5
     },
-    "scheme": "myapp",
+    "extra": {
+      "apiHost": {
+        "development": "http://mitcoin.test",
+        "production": "https://mitcoin.mit.edu"
+      }
+    },
+    "scheme": "mitcoin",
     "entryPoint": "node_modules/expo/AppEntry.js"
   },
   "displayName": "MITCoin",

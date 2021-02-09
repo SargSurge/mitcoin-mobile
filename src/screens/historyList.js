@@ -57,17 +57,17 @@ export default HistoryList = ({ actualHistory, contextText }) => {
       <Background />
       {actualHistory.length !== 0 ? (
         <FlatList
-          data={actualHistory.reverse()}
+          data={actualHistory}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
             return (
               <HistoryCard
-                date={moment(item.date).format("MMMM Do YYYY, h:mm a")}
-                toFrom={item.tofrom}
+                date={moment(item.sent_at).format("MMMM Do YYYY, h:mm a")}
+                toFrom={item.recipient.kerberos}
                 amount={item.amount}
-                comment={item.comment}
+                comment={item.description}
                 contextText={contextText}
-                name={item.name}
+                name={item.recipient.name}
               />
             );
           }}

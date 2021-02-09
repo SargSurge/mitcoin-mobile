@@ -5,11 +5,22 @@ import { UserContext } from "../UserContext.js";
 import HistoryList from "./historyList.js";
 import Header from "./header.js";
 import Background from "./imageBackground.js";
+
 export default class History extends React.Component {
   static contextType = UserContext;
 
+  state = {
+    sent: [],
+    received: []
+  };
+
+  componentDidMount() {
+    this.context.fetchHistory().then((data) => {
+      this.setState(data);
+    });
+  }
+
   render() {
-    const user = this.context.user;
     return (
       <Container>
         <Background />
@@ -23,7 +34,7 @@ export default class History extends React.Component {
             heading="Send History"
           >
             <HistoryList
-              actualHistory={user.sendHistory}
+              actualHistory={this.state.sent}
               contextText="sendHistory"
             />
           </Tab>
@@ -35,7 +46,7 @@ export default class History extends React.Component {
             textStyle={{ color: "#919191" }}
           >
             <HistoryList
-              actualHistory={user.receiveHistory}
+              actualHistory={this.state.received}
               contextText="receiveHistory"
             />
           </Tab>

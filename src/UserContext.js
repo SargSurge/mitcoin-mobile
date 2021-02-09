@@ -1,49 +1,84 @@
 import React, { createContext } from "react";
+import * as SecureStore from "expo-secure-store";
+import API from "./api-client";
 
 export const UserContext = createContext();
 
-let userSample2 = {
-  fullName: "Brian Ntanga",
-  mitid: 6667788,
-  kerberos: "bntanga",
-  giveBalance: 5000,
-  amountGiven: 20,
-  receiveBalance: 50,
-  votedCharities: [
-    "My very long name charity Which is going to overflow",
-    "Africa music",
-    "Another charity",
-  ],
-  selectedCharity: "On the Rise",
-  distinctSends: { kerbs: ["bntanga"], number: 4 },
-  distinctReceives: { kerbs: ["ifyt"], number: 6 },
-  sendHistory: [],
-  receiveHistory: [
-    {
-      date: 66060505070708808008909090909090900990,
-      amount: 10,
-      tofrom: "bouth",
-      comment: "Because i WANT",
-      name: "Bint Outhman",
-    },
-  ],
-};
 export class UserProvider extends React.Component {
   state = {
     user: {},
-    voting_closed: true,
-    socket_object: null,
+    token: null
   };
 
-  updateUser = (user) => {
-    this.setState({ user: user });
-  };
-  updateVotingStatus = (status) => {
-    this.setState({ voting_closed: status });
+  signIn = async (token) => {
+    this.setState({ token });
+    await SecureStore.setItemAsync("sessionToken", token);
+    await this.refresh()
   };
 
-  updateSocketObject = (socket) => {
-    this.setState({ socket_object: socket });
+  signOut = async (token) => {
+    this.setState({ token: null });
+    await SecureStore.deleteItemAsync("sessionToken", token);
+  };
+
+  isSignedIn = async () => {
+    var token = await SecureStore.getItemAsync("sessionToken");
+
+    if ( token ) {
+      this.setState({ token });
+      await this.refresh();
+
+      // `refresh()` will reset token if the request fails
+      return !!this.state.token;
+    } else {
+      return false;
+    }
+  };
+
+  refresh = async () => {
+    if ( this.state.token ) {
+      var response = await fetch(
+        API.path("/profile"),
+        { headers: { Accept: "application/json", Authorization: `Bearer ${this.state.token}` } }
+      );
+
+      if ( response.status === 200 ) {
+        var userData = await response.json();
+
+        this.setState({ user: userData });
+      } else {
+        await this.signOut();
+      }
+    }
+  };
+
+  fetchHistory = async () => {
+    var response = await fetch(
+      API.path("/coin_transfers"),
+      { headers: { Accept: "application/json", Authorization: `Bearer ${this.state.token}` } }
+    );
+
+    if ( response.status === 200 ) {
+      return await response.json();
+    } else {
+      return { sent: [], received: [] };
+    }
+  };
+
+  createSignInURL = async () => {
+    var response = await fetch(
+      API.path("/session_tokens"),
+      {
+        method: "POST",
+        headers: { Accept: "application/json", Authorization: `Bearer ${this.state.token}` }
+      }
+    );
+
+    if ( response.status === 200 ) {
+      var json = await response.json();
+
+      return json.url;
+    }
   };
 
   render() {
@@ -51,12 +86,12 @@ export class UserProvider extends React.Component {
       <UserContext.Provider
         value={{
           user: this.state.user,
-          // user: userSample2,
-          updateUser: this.updateUser,
-          voting_closed: this.state.voting_closed,
-          updateVotingStatus: this.updateVotingStatus,
-          socket_object: this.state.socket_object,
-          updateSocketObject: this.updateSocketObject,
+          refresh: this.refresh,
+          isSignedIn: this.isSignedIn,
+          signIn: this.signIn,
+          signOut: this.signOut,
+          createSignInURL: this.createSignInURL,
+          fetchHistory: this.fetchHistory
         }}
       >
         {this.props.children}

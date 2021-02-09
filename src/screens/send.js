@@ -2,6 +2,7 @@ import React from "react";
 import Toast, { DURATION } from "react-native-easy-toast";
 import Spinner from "react-native-loading-spinner-overlay";
 import { Form, Item, Input, View, Button, Label, Text } from "native-base";
+import API from "../api-client";
 
 import {
   ScrollView,
@@ -20,11 +21,9 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { UserContext } from "../UserContext.js";
 import Header from "./header.js";
-import { WEB_URL } from "../config.js";
 
 import Background from "./imageBackground.js";
 import Fonts from "./fonts.js";
-import * as SecureStore from "expo-secure-store";
 import { registerForPushNotificationsAsync } from "./notifications.js";
 
 import CoinsIcon from "../../assets/images/CoinsIcon.png";
@@ -95,7 +94,7 @@ export default class Send extends React.Component {
         .number()
         .typeError("Amount must be a number")
         .min(1, "Invalid Amount!")
-        .max(parseInt(this.context.user.giveBalance), "Not enough coins")
+        .max(parseInt(this.context.user.balance), "Not enough coins")
         .required("Required!"),
       receiverKerberos: yup
         .string()
@@ -117,32 +116,17 @@ export default class Send extends React.Component {
   };
 
   modal_function = () => {
-    //This determines when to show the modal
-    if (this.context.voting_closed) {
-      if (this.context.user.selectedCharity === "") {
-        return this.modal();
-      } else return null;
+    if (this.context.user.charity === "") {
+      return this.modal();
     } else {
-      if (this.context.user.votedCharities.length === 0) {
-        return this.modal();
-      } else return null;
+      return null;
     }
   };
+
   modal = () => {
-    //called by modal function to display stuff about voting and selected charity
-    let intro_text = this.context.voting_closed
-      ? "Select a charity!"
-      : "Vote for a charity!";
-    let explanation_text = this.context.voting_closed
-      ? `Hello ${
-          this.context.user.fullName.split(" ")[0]
-        }! Voting is closed and the top 3 charities have been selected. Please click the button below to select one of the three charities to which an equivalent dollar amount of all your received coins will be donated to.`
-      : `Hello ${
-          this.context.user.fullName.split(" ")[0]
-        }! You have not yet voted for a charity. Please click on the button below to vote for a charity (or charities) of your choice on our website.`;
-    let button_text = this.context.voting_closed
-      ? "Select a charity"
-      : "Vote for charities";
+    let intro_text = "Select a charity!";
+    let explanation_text = `Hello ${this.context.user.name.given}! You have not yet voted for a charity. Please click on the button below to vote for a charity (or charities) of your choice on our website.`;
+    let button_text = "Select a charity";
 
     return (
       <View style={styles.centeredView}>
@@ -228,12 +212,10 @@ export default class Send extends React.Component {
   };
 
   voteOnWebsite = async () => {
-    //Voting for a charity on the website
+    var url = await this.context.createSignInURL();
+    var returnUrl = Linking.makeUrl("/send");
 
-    let select_url = this.context.voting_closed
-      ? WEB_URL + "selectcharity/" + this.context.user.mitid
-      : WEB_URL + "votecharity/" + this.context.user.mitid;
-    Linking.openURL(select_url);
+    await Linking.openURL(`${url}?app_url=${returnUrl}`);
 
     this.setState({ modalVisible: false });
   };
@@ -249,10 +231,9 @@ export default class Send extends React.Component {
     let response, responseJSON;
     try {
       response = await fetch(
-        `${WEB_URL}api/find_user_by_kerb_or_name?kerb_or_name=${kerb_or_name}`,
+        API.path("/people", { q: kerb_or_name }),
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Accept": "application/json", "Content-Type": "application/json" },
         }
       );
       responseJSON = await response.json();
@@ -272,7 +253,7 @@ export default class Send extends React.Component {
     }
 
     this.setState({
-      searchResults: responseJSON.users,
+      searchResults: responseJSON,
       showSpinner: false,
     });
   };
@@ -281,85 +262,64 @@ export default class Send extends React.Component {
     //function called to submit coins
     this.setState({ showSpinner: true });
 
-    let body = JSON.stringify({
-      giverKerberos: this.context.user.kerberos,
-      receiverKerberos: values.receiverKerberos,
-      amount: values.amount,
-      comment: values.comment,
-      receiverName: this.state.sendingToName,
-      giverName: this.context.user.fullName,
-    });
+    var requestBody = {
+      transfer_slip: {
+        send_to_kerberos: values.receiverKerberos,
+        amount: values.amount,
+        description: values.comment
+      }
+    };
 
-    let token;
-    try {
-      token = await SecureStore.getItemAsync("refreshToken");
-    } catch (e) {
-      console.error(e);
-      console.log("could not get token");
-      return;
-    }
-
-    let response, responseJSON;
-    try {
-      response = await fetch(WEB_URL + "api/idsend", {
+    var response = await fetch(
+      API.path("/coin_transfers"),
+      {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: token },
-        body: body,
-      });
-      responseJSON = await response.json();
-    } catch (e) {
-      console.error(e);
-      console.log("errored failing to send coins");
-      return;
-    }
+        headers: { "Accept": "application/json", "Content-Type": "application/json", Authorization: `Bearer ${this.context.user.token}` },
+        body: JSON.stringify(requestBody)
+      }
+    );
 
-    if (responseJSON.kerbError) {
+    if ( response.status === 201 ) {
+      await this.context.refresh();
+      await actions.setSubmitting(false);
+      await actions.resetForm();
+
+      //Hacky solution. The validation schema needs to be updated again with the new user send coins balance.
+      //The old one still has old data hence the need for the new update. This code duplicates what is in this.state.validationSchema
+      let newValidationSchema = yup.object().shape({
+        amount: yup
+          .number()
+          .typeError("Amount must be a number")
+          .min(1, "Invalid Amount!")
+          .max(parseInt(this.context.user.balance), "Not enough coins")
+          .required("Required!"),
+        receiverKerberos: yup
+          .string()
+          .required("Required!")
+          .test(
+            "selfReceiver",
+            "Cannot send coins to self",
+            (kerb) => kerb !== this.context.user.kerberos
+          ),
+      });
+
+      this.setState({
+        validationSchema: newValidationSchema,
+        showSpinner: false,
+      });
+
+      this.refs.toast.show("Coins sent successfully!", 2000);
+    } else {
       //Checking if the kerb is invalid is done on the server. It returns a kerb
       //error if the kerb is invalid
       this.setState({ showSpinner: false, kerbError: "Invalid Kerberos" });
-
-      return;
     }
-
-    await this.context.updateUser(responseJSON);
-    try {
-      await actions.setSubmitting(false);
-      await actions.resetForm();
-    } catch (e) {
-      console.error(e);
-      console.log("error with formik stuff");
-    }
-
-    this.refs.toast.show("Coins sent successfully!", DURATION.LENGTH_LONG);
-
-    //Hacky solution. The validation schema needs to be updated again with the new user send coins balance.
-    //The old one still has old data hence the need for the new update. This code duplicates what is in this.state.validationSchema
-    let newValidationSchema = yup.object().shape({
-      amount: yup
-        .number()
-        .typeError("Amount must be a number")
-        .min(1, "Invalid Amount!")
-        .max(parseInt(this.context.user.giveBalance), "Not enough coins")
-        .required("Required!"),
-      receiverKerberos: yup
-        .string()
-        .required("Required!")
-        .test(
-          "selfReceiver",
-          "Cannot send coins to self",
-          (kerb) => kerb !== this.context.user.kerberos
-        ),
-    });
-
-    this.setState({
-      validationSchema: newValidationSchema,
-      showSpinner: false,
-    });
   };
 
   componentDidMount() {
     registerForPushNotificationsAsync(this.context.user.kerberos);
   }
+
   render() {
     const user = this.context.user;
 
@@ -431,7 +391,7 @@ export default class Send extends React.Component {
                     }}
                   >
                     {" "}
-                    Welcome {user.fullName.split(" ")[0]}!
+                    Welcome {user.name.given}!
                   </Text>
 
                   {border}
@@ -453,12 +413,12 @@ export default class Send extends React.Component {
                     >
                       <CoinDetails
                         text="Coins you can give"
-                        value={`${user.giveBalance} MITCoins`}
+                        value={`${user.balance} MITCoins`}
                       />
 
                       <CoinDetails
                         text="Coins you've received"
-                        value={`${user.receiveBalance} MITCoins`}
+                        value={`${user.activity.coins_received} MITCoins`}
                       />
                     </View>
                     <Image
@@ -621,7 +581,7 @@ export default class Send extends React.Component {
                                     }}
                                     onPress={() => {
                                       formikProps.values.receiverKerberos =
-                                        item.kerb;
+                                        item.kerberos;
 
                                       this.setState({
                                         showDropdown: false,
@@ -641,7 +601,7 @@ export default class Send extends React.Component {
                                     >
                                       <Text>{item.name}</Text>
                                       <Text style={{ fontWeight: "bold" }}>
-                                        {item.kerb}
+                                        {item.kerberos}
                                       </Text>
                                     </View>
                                   </TouchableOpacity>
